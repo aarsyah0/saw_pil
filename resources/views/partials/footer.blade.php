@@ -11,8 +11,8 @@
 
         <div class="footer-section">
             <h3 class="footer-title">Hubungi :</h3>
-            <p class="footer-text"><strong>Email:</strong> hohohoho@gmail.com</p>
-            <p class="footer-text"><strong>WhatsApp:</strong> 08645532556</p>
+            <p class="footer-text"><strong>Email:</strong> politeknik@polije.ac.id</p>
+            <p class="footer-text"><strong>WhatsApp:</strong> +62 331 333533</p>
         </div>
     </div>
 
