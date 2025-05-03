@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\CuSelectionController;
 use App\Http\Controllers\Admin\SchedulePiBiController;
 use App\Http\Controllers\Admin\BobotKriteriaController;
 use App\Http\Controllers\Admin\PenilaianAkhirController;
+use App\Http\Controllers\Juri\PenilaianJuriController;
 
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
@@ -276,3 +277,32 @@ Route::middleware('auth')
          Route::get('penilaian-akhir', [PenilaianAkhirController::class, 'index'])
               ->name('penilaian-akhir.index');
      });
+
+
+
+// routes/web.php
+
+// ... import controller di atas
+
+Route::middleware('auth')
+     ->prefix('juri')
+     ->name('juri.')
+     ->group(function(){
+
+    // Dashboard
+    Route::get('dashboard', [DashboardJuriController::class,'index'])
+         ->name('dashboard');
+
+    // Peserta, Jadwal, Presentasi...
+    Route::get('peserta',   [PesertaController::class,'index'])->name('peserta');
+    Route::get('jadwal',    [JadwalJuriController::class,'index'])->name('jadwal');
+    Route::get('presentasi',[PresentasiController::class,'index'])->name('presentasi');
+
+    // Penilaian: index + create/store PI/BI
+    Route::get('penilaian',                   [PenilaianJuriController::class,'index'])->name('penilaian.index');
+    Route::get('penilaian/pi/{schedule}',     [PenilaianJuriController::class,'createPi'])->name('penilaian.pi.create');
+    Route::post('penilaian/pi/{schedule}',    [PenilaianJuriController::class,'storePi'])->name('penilaian.pi.store');
+    Route::get('penilaian/bi/{schedule}',     [PenilaianJuriController::class,'createBi'])->name('penilaian.bi.create');
+    Route::post('penilaian/bi/{schedule}',    [PenilaianJuriController::class,'storeBi'])->name('penilaian.bi.store');
+
+});
