@@ -31,6 +31,10 @@ use App\Http\Controllers\Admin\KategoriCuController;
 use App\Http\Controllers\Admin\CuVerificationController;
 use App\Http\Controllers\Admin\CuSelectionController;
 use App\Http\Controllers\Admin\SchedulePiBiController;
+use App\Http\Controllers\Admin\BobotKriteriaController;
+use App\Http\Controllers\Admin\PenilaianAkhirController;
+
+
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 
@@ -249,3 +253,26 @@ Route::prefix('admin')
             [SchedulePiBiController::class,'detail'])
        ->name('schedules.detail');
 });
+
+
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function(){
+    Route::get('bobot-kriteria', [BobotKriteriaController::class, 'index'])
+        ->name('bobot-kriteria.index');
+    Route::get('bobot-kriteria/{nama}/edit', [BobotKriteriaController::class, 'edit'])
+        ->name('bobot-kriteria.edit');
+    Route::put('bobot-kriteria/{nama}', [BobotKriteriaController::class, 'update'])
+        ->name('bobot-kriteria.update');
+    Route::post('bobot-kriteria', [BobotKriteriaController::class, 'store'])
+        ->name('bobot-kriteria.store');
+
+});
+
+
+Route::middleware('auth')
+     ->prefix('admin')
+     ->name('admin.')
+     ->group(function(){
+         // ...
+         Route::get('penilaian-akhir', [PenilaianAkhirController::class, 'index'])
+              ->name('penilaian-akhir.index');
+     });

@@ -70,6 +70,13 @@
                                 <i class="bi bi-tags-fill mr-2"></i> Kategori CU
                             </a>
                         </li>
+                        <li class="my-2">
+                            <a href="{{ route('admin.bobot-kriteria.index') }}"
+                                class="flex items-center py-2 px-4 rounded-lg hover:bg-gray-200 transition
+                                   {{ Request::routeIs('admin.bobot-kriteria.*') ? 'bg-white font-bold shadow' : '' }}">
+                                <i class="bi bi-sliders mr-2"></i> Bobot Kriteria
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </li>
@@ -131,8 +138,17 @@
                 </a>
             </li>
 
+            <li class="mb-2">
+                <a href="{{ route('admin.penilaian-akhir.index') }}"
+                    class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition
+                    {{ Request::routeIs('admin.landing-page.index') ? 'bg-white font-bold shadow' : '' }}">
+                    <i class="bi bi-clipboard-check text-lg mr-3"></i> Penilaian Akhir
 
-            <!-- Notifikasi & Email -->
+                </a>
+            </li>
+
+
+            <!-- Notifikasi & Eail -->
             <li class="mb-2" x-data="{ openNotif: false }">
                 <button @click="openNotif = !openNotif"
                     class="flex items-center justify-between w-full py-3 px-4 rounded-lg hover:bg-gray-200 transition">
