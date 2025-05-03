@@ -1,151 +1,158 @@
-<!DOCTYPE html>
-<html lang="en">
+{{-- resources/views/user/berkas/index.blade.php --}}
+@extends('user.layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Berkas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-</head>
+@section('title', 'Daftar Berkas CU')
+@section('page_title', 'Berkas CU Saya')
 
-<body class="bg-white flex">
-    <aside class="w-1/5 bg-[#E7EFF6] text-black p-5 border-r-2 border-gray-300 h-screen fixed overflow-y-auto">
-        <div class="flex items-center justify-center mb-5">
-            <img src="/images/pilmapres.png" alt="PILMAPRES" class="w-16">
+@section('content')
+    <div x-data="{ showModal: false }" x-cloak class="relative">
+
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">Daftar Submission CU</h2>
+            <button @click="showModal = true"
+                class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+                <i class="bi bi-upload text-lg"></i>
+                <span>Unggah Berkas CU</span>
+            </button>
         </div>
-        <nav>
-            <ul>
-                <li class="mb-2">
-                    <a href="{{ route('user.dashboard') }}"
-                        class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition">
-                        <i class="bi bi-grid-1x2-fill text-lg mr-3"></i> Dashboard
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a href="{{ route('berkas.index') }}"
-                        class="flex items-center py-3 px-4 rounded-lg bg-white text-black font-bold shadow hover:bg-gray-200 transitio">
-                        <i class="bi bi-folder-fill text-lg mr-3"></i> Berkas
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a href="{{ route('user.profile') }}"
-                        class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition">
-                        <i class="bi bi-person-circle text-lg mr-3"></i> Profile
-                    </a>
-                </li>
 
-                <li class="mb-2">
-                    <a href="{{ route('user.hasil') }}"
-                        class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition">
-                        <i class="bi bi-bar-chart-line-fill text-lg mr-3"></i> Hasil
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a href="{{ route('user.jadwal') }}"
-                        class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition">
-                        <i class="bi bi-calendar-check-fill text-lg mr-3"></i> Jadwal
-                    </a>
-                </li>
-                <li class="mt-6">
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit"
-                            class="w-full flex items-center py-3 px-4 rounded-lg bg-red-500 text-white font-bold shadow hover:bg-red-600 transition">
-                            <i class="bi bi-box-arrow-right text-lg mr-3"></i> Logout
-                        </button>
-                    </form>
-                </li>
-            </ul>
-        </nav>
-    </aside>
+        <!-- Alerts -->
+        @if (session('success'))
+            <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-800 rounded">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-800 rounded">
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-    <main class="flex-1 p-10 overflow-y-auto ml-[20%]">
-        <div class="bg-[#E7EFF6] p-6 rounded-lg shadow-md">
-            <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold">Berkas</h1>
-                <span class="text-gray-700">Good morning, <strong>Yoshi Toranaga</strong></span>
+        <!-- Table Card -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            @foreach (['#', 'Kategori', 'Tanggal Unggah', 'Status', 'Skor', 'Aksi'] as $header)
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {{ $header }}
+                                </th>
+                            @endforeach
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse($submissions as $item)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $loop->iteration }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    {{ optional($item->kategori)->wujud_cu ?? '-' }}<br>
+                                    <span class="text-xs text-gray-500">Level
+                                        {{ optional($item->kategori)->level_id ?? '' }}</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    {{ $item->submitted_at->format('d M Y H:i') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                {{ $item->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : ($item->status == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') }}">
+                                        {{ ucfirst($item->status) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $item->skor }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                    <a href="{{ Storage::url($item->file_path) }}" target="_blank"
+                                        class="underline text-blue-600">
+                                        Unduh
+                                    </a>
+                                    @if ($item->status === 'pending')
+                                        <form action="{{ route('berkas.destroy', $item->id) }}" method="POST"
+                                            class="inline">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:text-red-900"
+                                                onclick="return confirm('Yakin ingin menghapus?')">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">
+                                    Belum ada submission.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-md mt-6">
-            <h2 class="text-3xl font-semibold text-center leading-tight">Capaian Unggulan</h2>
-            <br>
-            <button onclick="toggleModal()"
-                class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Unggah Berkas</button>
-
-            <table class="w-full mt-4 border-collapse border border-gray-300 text-center">
-                <thead>
-                    <tr class="bg-gray-200">
-                        <th class="border p-2">No</th>
-                        <th class="border p-2">Kategori</th>
-                        <th class="border p-2">Bidang</th>
-                        <th class="border p-2">Wujud</th>
-                        <th class="border p-2">Nama Berkas</th>
-                        <th class="border p-2">Status</th>
-                        <th class="border p-2">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($berkas as $b)
-                        <tr>
-                            <td class="border p-2">{{ $b['no'] }}</td>
-                            <td class="border p-2">{{ $b['kategori'] }}</td>
-                            <td class="border p-2">{{ $b['bidang'] }}</td>
-                            <td class="border p-2">{{ $b['wujud'] }}</td>
-                            <td class="border p-2">{{ $b['nama_berkas'] }}</td>
-                            <td class="border p-2 text-yellow-500">{{ $b['status'] }}</td>
-                            <td class="border p-2">
-                                <button class="text-blue-500 hover:text-blue-700">
-                                    <i class="bi bi-exclamation-circle-fill"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <!-- Modal Pop-up -->
-    <div id="uploadModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-[#E7EFF6] p-6 rounded-lg shadow-lg w-96">
-            <h2 class="text-xl font-semibold text-center">Unggah Berkas</h2>
-            <form action="{{ route('berkas.upload') }}" method="POST" enctype="multipart/form-data" class="mt-4">
-                @csrf
-                <label class="block mb-2">Kategori</label>
-                <select name="kategori" class="border p-2 w-full rounded-lg">
-                    <option value="">Pilih Kategori</option>
-                </select>
-
-                <label class="block mt-4 mb-2">Bidang</label>
-                <select name="bidang" class="border p-2 w-full rounded-lg">
-                    <option value="">Pilih Bidang</option>
-                </select>
-
-                <label class="block mt-4 mb-2">Wujud Capaian</label>
-                <select name="wujud" class="border p-2 w-full rounded-lg">
-                    <option value="">Pilih Wujud Capaian</option>
-                </select>
-
-                <label class="block mt-4 mb-2">Choose file</label>
-                <input type="file" name="file" class="border p-2 w-full rounded-lg">
-
-                <div class="flex justify-end mt-4">
-                    <button type="button" onclick="toggleModal()"
-                        class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">BATAL</button>
-                    <button type="submit"
-                        class="bg-green-500 text-white px-4 py-2 rounded-lg ml-2 hover:bg-green-600 transition">UNGGAH</button>
+        <!-- Modal Backdrop -->
+        <div x-show="showModal"
+            class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+            x-transition.opacity>
+            <!-- Modal -->
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6" x-transition.scale>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Unggah Berkas CU</h3>
+                    <button @click="showModal = false" class="text-gray-600 hover:text-gray-800">
+                        <i class="bi bi-x-lg text-2xl"></i>
+                    </button>
                 </div>
-            </form>
+                <form action="{{ route('berkas.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-4">
+                        <label for="kategori_cu_id" class="block text-sm font-medium text-gray-700 mb-1">Kategori CU</label>
+                        <select name="kategori_cu_id" id="kategori_cu_id"
+                            class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">-- Pilih Kategori --</option>
+                            @foreach ($kategoris as $k)
+                                <option value="{{ $k->id }}"
+                                    {{ old('kategori_cu_id') == $k->id ? 'selected' : '' }}>
+                                    {{ $k->wujud_cu }} (Lv {{ $k->level_id }}) – Skor {{ $k->skor }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('kategori_cu_id')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="mb-4">
+                        <label for="file" class="block text-sm font-medium text-gray-700 mb-1">File (PDF/ZIP, max
+                            10MB)</label>
+                        <input type="file" name="file" id="file" accept=".pdf,.zip"
+                            class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4
+                        file:rounded-md file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-blue-50 file:text-blue-700
+                        hover:file:bg-blue-100" />
+                        @error('file')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" @click="showModal = false"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                            Unggah
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <script>
-        function toggleModal() {
-            document.getElementById('uploadModal').classList.toggle('hidden');
-        }
-    </script>
-</body>
-
-</html>
+    <!-- Alpine.js -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+@endsection

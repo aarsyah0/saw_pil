@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\User\BerkasController as BerkasUser;
+use App\Http\Controllers\User\BerkasController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\User\ProfileController;
@@ -58,23 +58,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/update', [UserDashboard::class, 'updateProfile'])->name('user.profile.update');
 });
 
-
-Route::get('/user/berkas', [BerkasUser::class, 'index'])->name('berkas.index');
-Route::post('/user/berkas/upload', [BerkasUser::class, 'upload'])->name('berkas.upload');
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/user/profile', [ProfileController::class, 'index'])->name('user.profile');
-    Route::put('/user/profile/update', [ProfileController::class, 'update'])->name('user.profile.update');
-});
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/user/jadwal', [JadwalController::class, 'index'])->name('user.jadwal');
-    Route::put('/user/jadwal/update', [JadwalController::class, 'update'])->name('user.jadwal.update');
-});
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/user/hasil', [HasilController::class, 'index'])->name('user.hasil');
-});
 
 //Middleware Juri
 Route::middleware([\App\Http\Middleware\JuriMiddleware::class])->group(function () {
@@ -306,3 +289,9 @@ Route::middleware('auth')
     Route::post('penilaian/bi/{schedule}',    [PenilaianJuriController::class,'storeBi'])->name('penilaian.bi.store');
 
 });
+
+Route::middleware('auth')->group(function () {
+    Route::resource('berkas', BerkasController::class)
+         ->only(['index','create','store','show','destroy']);
+});
+

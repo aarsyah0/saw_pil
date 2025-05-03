@@ -3,42 +3,105 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\CuSubmission;
+use App\Models\KategoriCu;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class BerkasController extends Controller
 {
-    public function index()
+    public function __construct()
     {
-        $berkas = [
-            [
-                'no' => 1,
-                'kategori' => 'Kategori B / Regional',
-                'bidang' => 'Karir Organisasi',
-                'wujud' => 'Wakil Ketua',
-                'nama_berkas' => 'SertifikatLiterasiDigital.pdf',
-                'status' => 'Menunggu'
-            ],
-            [
-                'no' => 2,
-                'kategori' => 'Kategori B / Regional',
-                'bidang' => 'Karir Organisasi',
-                'wujud' => 'Wakil Ketua',
-                'nama_berkas' => 'SertifikatLiterasiDigital.pdf',
-                'status' => 'Menunggu'
-            ]
-        ];
-        
-        return view('user.berkas', compact('berkas'));
+        // Hanya peserta yang bisa mengakses
+        $this->middleware('auth');
     }
 
-    public function upload(Request $request)
+    /**
+     * Tampilkan daftar submission milik peserta.
+     */
+    public function index()
     {
-        $request->validate([
-            'file' => 'required|mimes:pdf|max:2048',
+        $submissions = CuSubmission::where('peserta_id', Auth::id())
+                                   ->orderBy('submitted_at', 'desc')
+                                   ->get();
+        $kategoris = KategoriCu::all();
+
+        return view('user.berkas', compact('submissions', 'kategoris'));
+    }
+
+    /**
+     * Tampilkan form unggah CU.
+     */
+    public function create()
+    {
+        $kategoris = KategoriCu::all();
+        return view('berkas.create', compact('kategoris'));
+    }
+
+    /**
+     * Proses unggah dan simpan record baru.
+     */
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'kategori_cu_id' => 'required|exists:kategori_cu,id',
+            'file'           => 'required|file|mimes:pdf,zip|max:10240', // 10MB
         ]);
-        
-        $path = $request->file('file')->store('berkas');
-        return back()->with('success', 'Berkas berhasil diunggah!');
+
+        // Ambil skor default dari kategori
+        $kategori    = KategoriCu::findOrFail($data['kategori_cu_id']);
+        $defaultSkor = $kategori->skor;
+
+        // Simpan file di storage/app/public/cu_submissions
+        $path = $request->file('file')->store('cu_submissions', 'public');
+
+        CuSubmission::create([
+            'peserta_id'     => Auth::id(),
+            'kategori_cu_id' => $data['kategori_cu_id'],
+            'file_path'      => $path,
+            'status'         => 'pending',
+            'skor'           => $defaultSkor,
+        ]);
+
+        return redirect()->route('berkas.index')
+                         ->with('success', "Berkas berhasil diunggah (skor default: {$defaultSkor}) dan menunggu review.");
+    }
+
+    /**
+     * Unduh berkas CU peserta.
+     */
+    public function show(CuSubmission $berkas)
+    {
+    // Cek apakah user yang login adalah pemilik berkas
+    if (auth()->user()->peserta && auth()->user()->peserta->id !== $berkas->peserta_id) {
+        abort(403, 'Anda tidak diizinkan mengakses berkas ini.');
+    }
+
+    // Cek apakah file benar-benar ada
+    if (!Storage::disk('public')->exists($berkas->file_path)) {
+        abort(404, 'File tidak ditemukan.');
+    }
+
+    // Unduh file
+    return Storage::disk('public')->download($berkas->file_path);
+    }
+
+
+    /**
+     * Hapus berkas CU jika masih pending.
+     */
+    public function destroy(CuSubmission $berkas)
+    {
+        $this->authorize('delete', $berkas);
+
+        if ($berkas->status !== 'pending') {
+            return back()->withErrors('Berkas yang sudah direview tidak dapat dihapus.');
+        }
+
+        Storage::disk('public')->delete($berkas->file_path);
+        $berkas->delete();
+
+        return back()->with('success', 'Berkas berhasil dihapus.');
     }
 }

@@ -25,6 +25,7 @@ class CuSubmission extends Model
     ];
 
     protected $casts = [
+        'submitted_at' => 'datetime',
         'reviewed_at' => 'datetime',
         'skor'        => 'decimal:2',
     ];
@@ -38,5 +39,9 @@ class CuSubmission extends Model
     {
         return $this->belongsTo(KategoriCu::class, 'kategori_cu_id', 'id');
     }
+    public function kategoriCu()
+{
+    return $this->belongsTo(KategoriCu::class, 'kategori_cu_id', 'id');
+}
 }
 
