@@ -1,133 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
+{{-- resources/views/user/hasil.blade.php --}}
+@extends('user.layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hasil</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-</head>
+@section('title', 'Hasil')
+@section('page_title', 'Hasil Perhitungan')
 
-<body class="bg-white flex">
-    <aside class="w-1/5 bg-[#E7EFF6] text-black p-5 border-r-2 border-gray-300 h-screen fixed overflow-y-auto">
-        <div class="flex items-center justify-center mb-5">
-            <img src="/images/pilmapres.png" alt="PILMAPRES" class="w-16">
+@section('content')
+    @php
+        $userId = auth()->id();
+
+        // Ambil record CU selection terbaru untuk peserta ini
+        $selection = \App\Models\CuSelection::where('peserta_id', $userId)->latest('selection_round')->first();
+
+        // Ambil detail submission CU jika lolos
+        $submission = null;
+        if ($selection && $selection->status_lolos === 'lolos') {
+            $submission = \App\Models\CuSubmission::where('peserta_id', $userId)
+                ->where('status', 'approved')
+                ->latest('submitted_at')
+                ->first();
+
+            // Siapkan data perhitungan tahap kedua (PI & BI) hanya jika CU lolos
+            $rankings = \App\Models\PenilaianAkhir::join(
+                'peserta_profile as pp',
+                'penilaian_akhir.peserta_id',
+                'pp.user_id',
+            )
+                ->join('users as u', 'pp.user_id', 'u.id')
+                ->whereIn('penilaian_akhir.peserta_id', function ($q) {
+                    $q->select('peserta_id')->from('cu_selection')->where('status_lolos', 'lolos');
+                })
+                ->orderByDesc('penilaian_akhir.total_akhir')
+                ->select([
+                    'penilaian_akhir.peserta_id',
+                    'u.name',
+                    'penilaian_akhir.skor_cu_normal',
+                    'penilaian_akhir.skor_pi_normal',
+                    'penilaian_akhir.skor_bi_normal',
+                    'penilaian_akhir.total_akhir',
+                ])
+                ->get();
+        }
+    @endphp
+
+    <div class="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-lg space-y-8">
+        {{-- Status CU Selection --}}
+        <div
+            class="text-center p-4 rounded-lg
+            @if ($selection && $selection->status_lolos == 'lolos') bg-green-100 border border-green-200 text-green-800
+            @elseif($selection && $selection->status_lolos == 'gagal') bg-red-100 border border-red-200 text-red-800
+            @else bg-yellow-100 border border-yellow-200 text-yellow-800 @endif">
+            @if (!$selection)
+                Data seleksi CU belum tersedia.
+            @elseif($selection->status_lolos === 'lolos')
+                <span class="font-semibold">Selamat! Anda <u>LOLOS</u> tahap CU selection.</span>
+            @elseif($selection->status_lolos === 'gagal')
+                <span class="font-semibold">Maaf, Anda <u>TIDAK LOLOS</u> tahap CU selection.</span>
+            @else
+                <span>Status seleksi CU Anda masih <u>PENDING</u>.</span>
+            @endif
         </div>
-        <nav>
-            <ul>
-                <li class="mb-2">
-                    <a href="{{ route('user.dashboard') }}"
-                        class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition">
-                        <i class="bi bi-grid-1x2-fill text-lg mr-3"></i> Dashboard
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a href="{{ route('berkas.index') }}"
-                        class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition">
-                        <i class="bi bi-folder-fill text-lg mr-3"></i> Berkas
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a href="{{ route('user.profile') }}"
-                        class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition">
-                        <i class="bi bi-person-circle text-lg mr-3"></i> Profile
-                    </a>
-                </li>
 
-                <li class="mb-2">
-                    <a href="{{ route('user.hasil') }}"
-                        class="flex items-center py-3 px-4 rounded-lg bg-white text-black font-bold shadow">
-                        <i class="bi bi-bar-chart-line-fill text-lg mr-3"></i> Hasil
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a href="{{ route('user.jadwal') }}"
-                        class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition">
-                        <i class="bi bi-calendar-check-fill text-lg mr-3"></i> Jadwal
-                    </a>
-                </li>
-                <li class="mt-6">
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit"
-                            class="w-full flex items-center py-3 px-4 rounded-lg bg-red-500 text-white font-bold shadow hover:bg-red-600 transition">
-                            <i class="bi bi-box-arrow-right text-lg mr-3"></i> Logout
-                        </button>
-                    </form>
-                </li>
-            </ul>
-        </nav>
-    </aside>
+        @if ($selection && $selection->status_lolos === 'lolos')
+            {{-- Detail Hasil CU --}}
+            <div class="bg-gray-50 p-6 rounded-lg shadow-inner space-y-4">
+                <h3 class="text-xl font-semibold">Detail Hasil CU</h3>
 
-    <main class="flex-1 p-10 overflow-y-auto ml-[20%]">
-        <div class="bg-[#E7EFF6] p-6 rounded-lg shadow-md mb-6">
-            <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold">HASIL</h1>
-                <span class="text-gray-700">Good morning, <strong>Yoshi Toranaga</strong></span>
+                @if ($submission)
+                    <ul class="space-y-2">
+                        <li><strong>Waktu Submit:</strong> {{ $submission->submitted_at->format('d M Y, H:i') }}</li>
+                        <li><strong>Status Review:</strong> {{ ucfirst($submission->status) }}</li>
+                        <li><strong>Skor CU Anda:</strong> {{ number_format($selection->skor_cu, 4) }}</li>
+                    </ul>
+                    <p class="mt-4 text-gray-700">
+                        Silakan tunggu jadwal tahap berikutnya (PI &amp; BI).
+                        Informasi jadwal akan diumumkan di halaman
+                        Jadwal
+                    </p>
+                @else
+                    <p class="text-gray-700">
+                        Anda belum memiliki submission CU yang disetujui.
+                        Silakan periksa kembali file CU Anda.
+                    </p>
+                @endif
             </div>
-        </div>
-        <div class="bg-white p-8 rounded-lg shadow-md">
-            <h2 class="text-2xl font-bold text-center mb-4">HASIL SELEKSI</h2>
-            <div class="bg-gray-100 p-6 rounded-lg">
-                <p class="border-b py-2 font-semibold">Nama : <span class="font-normal">Yoshi Toranaga</span></p>
-                <p class="border-b py-2 font-semibold">NIM : <span class="font-normal">E4200886175</span></p>
-                <p class="py-2 font-semibold">Status : <span class="text-red-600 font-bold">Menunggu</span></p>
-            </div>
-            <div class="flex justify-center mt-4">
-                <button id="openModal" class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
-                    <i class="bi bi-eye-fill mr-2"></i> Lihat Berkas
-                </button>
-            </div>
-        </div>
-    </main>
 
-    <!-- Modal -->
-    <div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-[#E7EFF6] p-6 rounded-lg shadow-lg w-[700px] border-4 border-gray-300 relative">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold text-center mb-4">Seleksi Pilmapres</h2>
-                <hr class="mb-4">
-                <h3 class="font-bold text-lg mb-2">Data Peserta :</h3>
-                <div class="grid grid-cols-2 gap-6">
-                    <div>
-                        <p class="text-sm font-semibold">Scan kartu tanda mahasiswa</p>
-                        <div class="border p-2 w-full bg-white flex items-center rounded-lg shadow-sm">
-                            <i class="bi bi-cloud-arrow-down-fill text-gray-500 mr-2"></i>
-                            <input type="file" class="w-full text-gray-600">
-                        </div>
+            {{-- Tahap 2: Perankingan Nilai Akhir --}}
+            <div class="space-y-4">
+                <h3 class="text-xl font-semibold">Tahap 2: Perankingan Nilai Akhir</h3>
+
+                @if ($rankings->isEmpty())
+                    <p class="text-gray-500">Data perhitungan akhir belum tersedia.</p>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                            <thead class="bg-gray-50">
+                                <tr class="text-left">
+                                    <th class="px-4 py-2">Rank</th>
+                                    <th class="px-4 py-2">Nama</th>
+                                    <th class="px-4 py-2">CU (Norm)</th>
+                                    <th class="px-4 py-2">PI (Norm)</th>
+                                    <th class="px-4 py-2">BI (Norm)</th>
+                                    <th class="px-4 py-2">Total Akhir</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($rankings as $i => $r)
+                                    <tr class="@if ($i % 2 == 0) bg-white @else bg-gray-50 @endif">
+                                        <td class="px-4 py-2">{{ $i + 1 }}</td>
+                                        <td class="px-4 py-2">{{ $r->name }}</td>
+                                        <td class="px-4 py-2">{{ number_format($r->skor_cu_normal, 3) }}</td>
+                                        <td class="px-4 py-2">{{ number_format($r->skor_pi_normal, 3) }}</td>
+                                        <td class="px-4 py-2">{{ number_format($r->skor_bi_normal, 3) }}</td>
+                                        <td class="px-4 py-2 font-semibold">{{ number_format($r->total_akhir, 3) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    <div>
-                        <p class="text-sm font-semibold">Kartu hasil studi (kumulatif)</p>
-                        <div class="border p-2 w-full bg-white flex items-center rounded-lg shadow-sm">
-                            <i class="bi bi-cloud-arrow-down-fill text-gray-500 mr-2"></i>
-                            <input type="file" class="w-full text-gray-600">
-                        </div>
-                    </div>
-                </div>
-                <h3 class="font-bold text-lg mt-4">Portofolio :</h3>
-                <div class="grid grid-cols-2 gap-6 mt-2">
-                    <p class="text-gray-700">BUKTI PENDUKUNG</p>
-                    <p class="text-gray-700">NASKAH PRODUKTIF INOVATIF</p>
-                </div>
+                @endif
             </div>
-            <div class="flex justify-end mt-4">
-                <button id="closeModal"
-                    class="bg-blue-500 text-white px-6 py-2 rounded-lg text-lg font-bold shadow-md border border-white">Tutup</button>
-            </div>
-        </div>
+        @endif
     </div>
-
-
-    <script>
-        document.getElementById('openModal').addEventListener('click', function() {
-            document.getElementById('modal').classList.remove('hidden');
-        });
-
-        document.getElementById('closeModal').addEventListener('click', function() {
-            document.getElementById('modal').classList.add('hidden');
-        });
-    </script>
-</body>
-
-</html>
+@endsection

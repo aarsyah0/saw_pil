@@ -1,4 +1,3 @@
-{{-- resources/views/partials/sidebar.blade.php --}}
 <aside class="w-1/5 bg-[#E7EFF6] text-black p-5 border-r-2 border-gray-300 h-screen fixed overflow-y-auto">
     <div class="flex items-center justify-center mb-5">
         <img src="/images/pilmapres.png" alt="PILMAPRES" class="w-16">
@@ -6,7 +5,6 @@
     <nav>
         <ul>
             @php
-                // helper untuk menambahkan kelas aktif
                 function isActive($pattern)
                 {
                     return request()->routeIs($pattern) ? 'bg-white font-bold' : 'hover:bg-gray-200';
@@ -21,8 +19,8 @@
             </li>
 
             <li class="mb-2">
-                <a href="#"
-                    class="flex items-center py-3 px-4 rounded-lg {{ isActive('user.profile') }} transition">
+                <a href="{{ route('user.profile.form') }}"
+                    class="flex items-center py-3 px-4 rounded-lg {{ isActive('user.profile.form') }} transition">
                     <i class="bi bi-person-circle text-lg mr-3"></i> Profile
                 </a>
             </li>
@@ -35,14 +33,14 @@
             </li>
 
             <li class="mb-2">
-                <a href="#"
-                    class="flex items-center py-3 px-4 rounded-lg {{ isActive('user.hasil') }} transition">
+                <a href="{{ route('profile.hasil') }}"
+                    class="flex items-center py-3 px-4 rounded-lg {{ isActive('profile.hasil') }} transition">
                     <i class="bi bi-bar-chart-line-fill text-lg mr-3"></i> Hasil
                 </a>
             </li>
 
             <li class="mb-2">
-                <a href="#"
+                <a href="{{ route('user.jadwal') }}"
                     class="flex items-center py-3 px-4 rounded-lg {{ isActive('user.jadwal') }} transition">
                     <i class="bi bi-calendar-check-fill text-lg mr-3"></i> Jadwal
                 </a>

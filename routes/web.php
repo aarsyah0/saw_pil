@@ -54,8 +54,6 @@ Route::prefix('admin')->group(function () {
 // Middleware User
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [UserDashboard::class, 'index'])->name('user.dashboard');
-    Route::get('/profile', [UserDashboard::class, 'profile'])->name('user.profile');
-    Route::post('/profile/update', [UserDashboard::class, 'updateProfile'])->name('user.profile.update');
 });
 
 
@@ -293,5 +291,32 @@ Route::middleware('auth')
 Route::middleware('auth')->group(function () {
     Route::resource('berkas', BerkasController::class)
          ->only(['index','create','store','show','destroy']);
+});
+Route::middleware('auth')
+     ->prefix('user')
+     ->name('user.profile.')
+     ->group(function () {
+         // Tampilkan form (upload file + data)
+         Route::get('profile', [ProfileController::class, 'form'])
+              ->name('form');
+
+         // Endpoint khusus untuk upload pas_foto & surat_pengantar
+         Route::post('profile/upload-files', [ProfileController::class, 'uploadFiles'])
+              ->name('uploadFiles');
+
+         // Simpan seluruh data profil (setelah file ter‐upload)
+         Route::post('profile', [ProfileController::class, 'save'])
+              ->name('save');
+});
+
+Route::middleware('auth')->group(function() {
+    // Halaman hasil perhitungan
+    Route::get('profile/hasil', [HasilController::class, 'index'])
+         ->name('profile.hasil');
+});
+
+Route::middleware('auth')->prefix('user')->group(function() {
+    Route::get('jadwal-pelaksanaan', [JadwalController::class, 'index'])
+         ->name('user.jadwal');
 });
 
