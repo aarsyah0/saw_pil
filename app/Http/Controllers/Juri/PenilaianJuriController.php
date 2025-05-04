@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Juri;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\SchedulePiBi;
@@ -11,145 +10,88 @@ use App\Models\PenilaianPiJuri;
 use App\Models\PenilaianBiJuri;
 use App\Models\PenilaianAkhir;
 use App\Models\BobotKriteria;
+use Illuminate\Http\Request;
 
 class PenilaianJuriController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
         $juriId = Auth::id();
-
-        $schedules = SchedulePiBi::query()
-            ->select('schedule_pi_bi.*')
+        $schedules = SchedulePiBi::with('peserta')
             ->join('schedule_pi_bi_juri as spbj', 'schedule_pi_bi.id', '=', 'spbj.schedule_id')
             ->where('spbj.juri_id', $juriId)
-            ->with('peserta')
-            ->orderBy('schedule_pi_bi.tanggal')
+            ->select('schedule_pi_bi.*')
             ->get();
-
         return view('juri.penilaian.penilaian', compact('schedules'));
-    }
-
-    public function createPi(SchedulePiBi $schedule)
-    {
-        $this->authorizeSchedule($schedule);
-        return view('juri.penilaian.pi.create', compact('schedule'));
     }
 
     public function storePi(Request $request, SchedulePiBi $schedule)
     {
-        $this->authorizeSchedule($schedule);
-
-        // Cek apakah sudah pernah dinilai
-        $penilaianAkhir = PenilaianAkhir::where('peserta_id', $schedule->peserta_id)->first();
-        if ($penilaianAkhir && $penilaianAkhir->skor_pi_normal !== null) {
-            return redirect()->route('juri.penilaian.index')
-                ->with('error', 'Penilaian PI sudah dilakukan sebelumnya.');
-        }
-
-        $rules = [
-            'penyajian'                      => 'required|numeric|between:0,100',
-            'substansi_masalah_fakta'        => 'required|numeric|between:0,100',
-            'substansi_masalah_identifikasi' => 'required|numeric|between:0,100',
-            'substansi_masalah_penerima'     => 'required|numeric|between:0,100',
-            'substansi_solusi_tujuan'        => 'required|numeric|between:0,100',
-            'substansi_solusi_smart'         => 'required|numeric|between:0,100',
-            'substansi_solusi_langkah'       => 'required|numeric|between:0,100',
-            'substansi_solusi_kebutuhan'     => 'required|numeric|between:0,100',
-            'kualitas_keunikan'              => 'required|numeric|between:0,100',
-            'kualitas_orisinalitas'          => 'required|numeric|between:0,100',
-            'kualitas_kelayakan'             => 'required|numeric|between:0,100',
-        ];
-
-        $data = $request->validate($rules);
-
-        PenilaianPiJuri::create([
-            'schedule_id' => $schedule->id,
-            ...$data
+        // ... validasi seperti sebelumnya ...
+        $data = $request->validate([
+            'penyajian' => 'required|numeric|between:0,15',
+            'substansi_masalah' => 'required|numeric|between:0,20',
+            'substansi_solusi' => 'required|numeric|between:0,35',
+            'kualitas_pi' => 'required|numeric|between:0,30',
         ]);
-
+        $data['schedule_id'] = $schedule->id;
+        $data['total_score'] = array_sum([$data['penyajian'], $data['substansi_masalah'], $data['substansi_solusi'], $data['kualitas_pi']]);
+        PenilaianPiJuri::create($data);
         $this->updatePenilaianAkhir($schedule->peserta_id);
-
-        return redirect()->route('juri.penilaian.index')
-            ->with('success', 'Penilaian PI tersimpan.');
-    }
-
-    public function createBi(SchedulePiBi $schedule)
-    {
-        $this->authorizeSchedule($schedule);
-        return view('juri.penilaian.bi.create', compact('schedule'));
+        return back()->with('success', 'Penilaian PI disimpan.');
     }
 
     public function storeBi(Request $request, SchedulePiBi $schedule)
     {
-        $this->authorizeSchedule($schedule);
-
-        // Cek apakah sudah pernah dinilai
-        $penilaianAkhir = PenilaianAkhir::where('peserta_id', $schedule->peserta_id)->first();
-        if ($penilaianAkhir && $penilaianAkhir->skor_bi_normal !== null) {
-            return redirect()->route('juri.penilaian.index')
-                ->with('error', 'Penilaian BI sudah dilakukan sebelumnya.');
-        }
-
-        $rules = [
-            'content_score'       => 'required|numeric|between:0,100',
-            'accuracy_score'      => 'required|numeric|between:0,100',
-            'fluency_score'       => 'required|numeric|between:0,100',
-            'pronunciation_score' => 'required|numeric|between:0,100',
-            'overall_perf_score'  => 'required|numeric|between:0,100',
-        ];
-
-        $data = $request->validate($rules);
-
-        PenilaianBiJuri::create([
-            'schedule_id' => $schedule->id,
-            ...$data
+        // ... validasi seperti sebelumnya ...
+        $data = $request->validate([
+            'content_score' => 'required|numeric|between:0,25',
+            'accuracy_score' => 'required|numeric|between:0,25',
+            'fluency_score' => 'required|numeric|between:0,20',
+            'pronunciation_score' => 'required|numeric|between:0,20',
+            'overall_perf_score' => 'required|numeric|between:0,10',
         ]);
-
+        $data['schedule_id'] = $schedule->id;
+        $data['total_score'] = array_sum([$data['content_score'], $data['accuracy_score'], $data['fluency_score'], $data['pronunciation_score'], $data['overall_perf_score']]);
+        PenilaianBiJuri::create($data);
         $this->updatePenilaianAkhir($schedule->peserta_id);
-
-        return redirect()->route('juri.penilaian.index')
-            ->with('success', 'Penilaian BI tersimpan.');
+        return back()->with('success', 'Penilaian BI disimpan.');
     }
 
     private function updatePenilaianAkhir(int $pesertaId): void
     {
-        $pi = DB::table('avg_penilaian_pi')
-            ->where('peserta_id', $pesertaId)
-            ->value('avg_pi_normal') ?? 0;
+        // Ambil semua schedule_id peserta
+        $scheduleIds = SchedulePiBi::where('peserta_id', $pesertaId)->pluck('id');
 
-        $bi = DB::table('avg_penilaian_bi')
-            ->where('peserta_id', $pesertaId)
-            ->value('avg_bi_normal') ?? 0;
+        // Hitung PI & BI normalisasi rata-rata
+        $piNormal = PenilaianPiJuri::whereIn('schedule_id', $scheduleIds)
+            ->get()->avg(fn($row) => $row->total_score / 100) ?: 0.0;
+        $biNormal = PenilaianBiJuri::whereIn('schedule_id', $scheduleIds)
+            ->get()->avg(fn($row) => $row->total_score / 100) ?: 0.0;
 
-        $cu = DB::table('penilaian_akhir')
-            ->where('peserta_id', $pesertaId)
-            ->value('skor_cu_normal') ?? 0;
+        // Ambil CU yang tersimpan
+        $skorCu = PenilaianAkhir::where('peserta_id', $pesertaId)
+            ->value('skor_cu_normal') ?: 0.0;
 
-        $bobot = BobotKriteria::pluck('bobot', 'nama_kriteria');
-        $wCU = $bobot['CU'] ?? 0;
-        $wPI = $bobot['PI'] ?? 0;
-        $wBI = $bobot['BI'] ?? 0;
+        // Hitung total terpadu tanpa mereset CU
+        $bobot = BobotKriteria::pluck('bobot','nama_kriteria')->toArray();
+        $total = round(
+            $skorCu * ($bobot['CU'] ?? 0)
+          + $piNormal * ($bobot['PI'] ?? 0)
+          + $biNormal * ($bobot['BI'] ?? 0)
+        , 4);
 
-        $total = $cu * $wCU + $pi * $wPI + $bi * $wBI;
-
-        PenilaianAkhir::updateOrCreate(
-            ['peserta_id' => $pesertaId],
-            [
-                'skor_cu_normal' => $cu,
-                'skor_pi_normal' => $pi,
-                'skor_bi_normal' => $bi,
-                'total_akhir'    => $total,
-            ]
-        );
-    }
-
-    private function authorizeSchedule(SchedulePiBi $schedule)
-    {
-        $exists = DB::table('schedule_pi_bi_juri')
-            ->where('schedule_id', $schedule->id)
-            ->where('juri_id', Auth::id())
-            ->exists();
-
-        abort_unless($exists, 403);
+        // Simpan hasil tanpa menimpa CU
+        $pa = PenilaianAkhir::firstOrNew(['peserta_id' => $pesertaId]);
+        $pa->skor_cu_normal = $skorCu;
+        $pa->skor_pi_normal = $piNormal;
+        $pa->skor_bi_normal = $biNormal;
+        $pa->total_akhir    = $total;
+        $pa->save();
     }
 }

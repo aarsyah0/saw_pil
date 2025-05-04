@@ -16,19 +16,22 @@ class PenilaianPiJuri extends Model
     protected $fillable = [
         'schedule_id',
         'penyajian',
-        'substansi_masalah_fakta',
-        'substansi_masalah_identifikasi',
-        'substansi_masalah_penerima',
-        'substansi_solusi_tujuan',
-        'substansi_solusi_smart',
-        'substansi_solusi_langkah',
-        'substansi_solusi_kebutuhan',
-        'kualitas_keunikan',
-        'kualitas_orisinalitas',
-        'kualitas_kelayakan',
+        'substansi_masalah',
+        'substansi_solusi',
+        'kualitas_pi',
+        'total_score',
     ];
 
-    // Relasi ke jadwal (opsional)
+    // Tipe data kolom
+    protected $casts = [
+        'penyajian' => 'decimal:2',
+        'substansi_masalah' => 'decimal:2',
+        'substansi_solusi' => 'decimal:2',
+        'kualitas_pi' => 'decimal:2',
+        'total_score' => 'decimal:2',
+    ];
+
+    // Relasi ke jadwal
     public function schedule()
     {
         return $this->belongsTo(SchedulePiBi::class, 'schedule_id');

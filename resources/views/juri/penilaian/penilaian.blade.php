@@ -39,14 +39,14 @@
                             <td class="px-4 py-3">
                                 <div class="flex gap-2 justify-center">
                                     <button
-                                        @click="!{{ $piDone ? 'true' : 'false' }} && open('pi', {{ $s->id }}, '{{ $s->peserta->name }}')"
+                                        @click="open('pi', {{ $s->id }}, '{{ $s->peserta->name }}', {{ $piDone ? 'true' : 'false' }})"
                                         class="px-3 py-1 rounded text-white {{ $piDone ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700' }}"
                                         {{ $piDone ? 'disabled' : '' }}>
                                         Nilai PI
                                     </button>
 
                                     <button
-                                        @click="!{{ $biDone ? 'true' : 'false' }} && open('bi', {{ $s->id }}, '{{ $s->peserta->name }}')"
+                                        @click="open('bi', {{ $s->id }}, '{{ $s->peserta->name }}', {{ $biDone ? 'true' : 'false' }})"
                                         class="px-3 py-1 rounded text-white {{ $biDone ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700' }}"
                                         {{ $biDone ? 'disabled' : '' }}>
                                         Nilai BI
@@ -67,28 +67,28 @@
                 {{-- Modal Header --}}
                 <h2 class="text-2xl font-semibold mb-4" x-text="title"></h2>
 
+                {{-- If already rated --}}
+                <template x-if="hasRated">
+                    <div class="p-4 bg-yellow-100 rounded">
+                        <p class="text-yellow-800">Anda sudah melakukan penilaian ini.</p>
+                    </div>
+                </template>
+
                 {{-- Form --}}
-                <form :action="action" method="POST" class="space-y-4">
+                <form x-show="!hasRated" :action="action" method="POST" class="space-y-4">
                     @csrf
 
                     {{-- PI Fields --}}
                     <div x-show="type==='pi'">
                         @foreach ([
-            'penyajian' => 'Penyajian',
-            'substansi_masalah_fakta' => 'Fakta',
-            'substansi_masalah_identifikasi' => 'Identifikasi',
-            'substansi_masalah_penerima' => 'Penerima',
-            'substansi_solusi_tujuan' => 'Tujuan',
-            'substansi_solusi_smart' => 'SMART',
-            'substansi_solusi_langkah' => 'Langkah',
-            'substansi_solusi_kebutuhan' => 'Kebutuhan',
-            'kualitas_keunikan' => 'Keunikan',
-            'kualitas_orisinalitas' => 'Orisinalitas',
-            'kualitas_kelayakan' => 'Kelayakan',
-        ] as $field => $label)
+            'penyajian' => ['label' => 'Penyajian', 'max' => 15],
+            'substansi_masalah' => ['label' => 'Substansi Masalah', 'max' => 20],
+            'substansi_solusi' => ['label' => 'Substansi Solusi', 'max' => 35],
+            'kualitas_pi' => ['label' => 'Kualitas PI', 'max' => 30],
+        ] as $field => $opt)
                             <div class="flex items-center gap-4">
-                                <label class="flex-1 text-gray-700">{{ $label }}</label>
-                                <input type="number" name="{{ $field }}" min="0" max="100"
+                                <label class="flex-1 text-gray-700">{{ $opt['label'] }} (0-{{ $opt['max'] }})</label>
+                                <input type="number" name="{{ $field }}" min="0" max="{{ $opt['max'] }}"
                                     value="0" class="w-20 px-2 py-1 border rounded text-center" required>
                             </div>
                         @endforeach
@@ -97,15 +97,15 @@
                     {{-- BI Fields --}}
                     <div x-show="type==='bi'">
                         @foreach ([
-            'content_score' => 'Content',
-            'accuracy_score' => 'Accuracy',
-            'fluency_score' => 'Fluency',
-            'pronunciation_score' => 'Pronunciation',
-            'overall_perf_score' => 'Overall Performance',
-        ] as $field => $label)
+            'content_score' => ['label' => 'Content', 'max' => 25],
+            'accuracy_score' => ['label' => 'Accuracy', 'max' => 25],
+            'fluency_score' => ['label' => 'Fluency', 'max' => 20],
+            'pronunciation_score' => ['label' => 'Pronunciation', 'max' => 20],
+            'overall_perf_score' => ['label' => 'Overall Performance', 'max' => 10],
+        ] as $field => $opt)
                             <div class="flex items-center gap-4">
-                                <label class="flex-1 text-gray-700">{{ $label }}</label>
-                                <input type="number" name="{{ $field }}" min="0" max="100"
+                                <label class="flex-1 text-gray-700">{{ $opt['label'] }} (0-{{ $opt['max'] }})</label>
+                                <input type="number" name="{{ $field }}" min="0" max="{{ $opt['max'] }}"
                                     value="0" class="w-20 px-2 py-1 border rounded text-center" required>
                             </div>
                         @endforeach
@@ -114,10 +114,7 @@
                     {{-- Submit --}}
                     <div class="text-right">
                         <button type="submit"
-                            :class="type === 'pi'
-                                ?
-                                'bg-blue-600 hover:bg-blue-700' :
-                                'bg-green-600 hover:bg-green-700'"
+                            :class="type === 'pi' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700'"
                             class="text-white px-6 py-2 rounded-lg">Simpan</button>
                     </div>
                 </form>
@@ -133,10 +130,12 @@
                 type: null,
                 title: '',
                 action: '',
-                open(type, id, name) {
+                hasRated: false, // flag jika sudah menilai
+                open(type, id, name, rated) {
                     this.type = type;
                     this.title = (type === 'pi' ? 'Penilaian PI' : 'Penilaian BI') + ' – ' + name;
                     this.action = `/juri/penilaian/${type}/${id}`;
+                    this.hasRated = rated; // set flag
                     this.show = true;
                 },
                 close() {

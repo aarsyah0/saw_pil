@@ -1,7 +1,8 @@
 @extends('admin.layouts.master')
 
 @section('content')
-    <div class="container mx-auto py-8">
+    <!-- Content wrapper fills full width provided by layout -->
+    <div class="w-full px-8 py-8">
 
         @if (session('success'))
             <div class="mb-6 bg-green-50 border border-green-400 text-green-800 px-6 py-4 rounded-lg shadow">
@@ -11,14 +12,13 @@
 
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-extrabold">Manajemen Jadwal PI/BI</h1>
-            <button onclick="openFormModal('create')"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
+            <button id="btnOpenModal" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
                 + Jadwal Baru
             </button>
         </div>
 
         <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-6 py-3 text-left">#</th>
@@ -31,28 +31,24 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach ($schedules as $i => $s)
-                        <tr class="hover:bg-gray-50">
+                        <tr class="hover:bg-gray-50" data-id="{{ $s->id }}" data-peserta="{{ $s->peserta->id }}"
+                            data-juries="{{ $s->juris->pluck('id')->join(',') }}"
+                            data-tanggal="{{ $s->tanggal->format('Y-m-d') }}" data-lokasi="{{ $s->lokasi }}">
                             <td class="px-6 py-4">{{ $schedules->firstItem() + $i }}</td>
                             <td class="px-6 py-4">{{ $s->peserta->name }}</td>
                             <td class="px-6 py-4">{{ $s->juris->pluck('name')->join(', ') }}</td>
                             <td class="px-6 py-4 text-center">{{ $s->tanggal->format('Y-m-d') }}</td>
                             <td class="px-6 py-4">{{ $s->lokasi }}</td>
                             <td class="px-6 py-4 text-center space-x-2">
-                                <button onclick="openDetailModal({{ $s->id }})"
-                                    class="px-2 py-1 border border-green-600 text-green-600 rounded hover:bg-green-50">
-                                    Detail
-                                </button>
-                                <button onclick="openFormModal('edit',{{ $s->id }})"
-                                    class="px-2 py-1 border border-indigo-600 text-indigo-600 rounded hover:bg-indigo-50">
-                                    Edit
-                                </button>
+                                <button
+                                    class="btnDetail px-2 py-1 border border-green-600 text-green-600 rounded hover:bg-green-50">Detail</button>
+                                <button
+                                    class="btnEdit px-2 py-1 border border-indigo-600 text-indigo-600 rounded hover:bg-indigo-50">Edit</button>
                                 <form action="{{ route('admin.schedules.destroy', $s->id) }}" method="POST" class="inline"
-                                    onsubmit="return confirm('Yakin?')">
+                                    onsubmit="return confirm('Yakin ingin menghapus jadwal?')">
                                     @csrf @method('DELETE')
                                     <button type="submit"
-                                        class="px-2 py-1 border border-red-600 text-red-600 rounded hover:bg-red-50">
-                                        Hapus
-                                    </button>
+                                        class="px-2 py-1 border border-red-600 text-red-600 rounded hover:bg-red-50">Hapus</button>
                                 </form>
                             </td>
                         </tr>
@@ -63,70 +59,123 @@
         </div>
     </div>
 
-    {{-- Create/Edit Modal --}}
-    <div id="formModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <!-- Unified Modal for Create/Edit/Detail -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden">
             <div class="flex justify-between items-center px-6 py-4 border-b">
                 <h2 id="modalTitle" class="text-lg font-semibold"></h2>
-                <button onclick="closeFormModal()" class="text-gray-400 hover:text-gray-600">✕</button>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">✕</button>
             </div>
-            <div id="formContent" class="p-6"></div>
+            <form id="modalForm" class="p-6 max-h-[70vh] overflow-y-auto" method="POST">
+                @csrf
+                <input type="hidden" name="_method" id="_method" value="POST">
+
+                <div class="mb-4">
+                    <label class="block mb-1">Peserta</label>
+                    <select id="peserta_id" name="peserta_id" class="w-full border rounded px-3 py-2">
+                        <option value="">-- Pilih Peserta --</option>
+                        @foreach ($pesertas as $id => $name)
+                            <option value="{{ $id }}">{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block mb-1">Juri</label>
+                    <select id="juri_id" name="juri_id[]" multiple class="w-full border rounded px-3 py-2 h-32">
+                        @foreach ($juris as $id => $name)
+                            <option value="{{ $id }}">{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block mb-1">Tanggal</label>
+                    <input id="tanggal" type="date" name="tanggal" class="w-full border rounded px-3 py-2">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block mb-1">Lokasi</label>
+                    <input id="lokasi" type="text" name="lokasi" class="w-full border rounded px-3 py-2">
+                </div>
+
+                <div class="text-right">
+                    <button type="submit" id="btnSubmit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
+                        Simpan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    {{-- Detail Modal --}}
-    <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
-            <div class="flex justify-between items-center px-6 py-4 border-b">
-                <h2 class="text-lg font-semibold">Detail Jadwal</h2>
-                <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600">✕</button>
-            </div>
-            <div id="detailContent" class="p-6 max-h-[60vh] overflow-y-auto"></div>
-        </div>
-    </div>
+    @push('scripts')
+        <script>
+            const modal = document.getElementById('modal');
+            const form = document.getElementById('modalForm');
+            const methodInput = document.getElementById('_method');
+            const titleEl = document.getElementById('modalTitle');
+            const submitBtn = document.getElementById('btnSubmit');
 
-    <script>
-        function openFormModal(mode, id = null) {
-            const url = mode === 'create' ?
-                "{{ route('admin.schedules.create') }}" :
-                `/admin/schedules/${id}/edit`;
+            // Open modal for create
+            document.getElementById('btnOpenModal').addEventListener('click', () => openModal('create'));
 
-            document.getElementById('modalTitle').textContent = mode === 'create' ?
-                'Buat Jadwal Baru' :
-                'Edit Jadwal';
+            // Delegate edit/detail buttons
+            document.querySelector('tbody').addEventListener('click', e => {
+                const tr = e.target.closest('tr');
+                if (!tr) return;
+                const data = {
+                    id: tr.dataset.id,
+                    peserta_id: tr.dataset.peserta,
+                    juri_ids: tr.dataset.juries.split(','),
+                    tanggal: tr.dataset.tanggal,
+                    lokasi: tr.dataset.lokasi
+                };
+                if (e.target.classList.contains('btnEdit')) openModal('edit', data);
+                if (e.target.classList.contains('btnDetail')) openModal('detail', data);
+            });
 
-            fetch(url, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(r => r.text())
-                .then(html => {
-                    document.getElementById('formContent').innerHTML = html;
-                    document.getElementById('formModal').classList.replace('hidden', 'flex');
-                });
-        }
+            function openModal(mode, data = {}) {
+                modal.classList.replace('hidden', 'flex');
+                form.reset();
+                ['peserta_id', 'tanggal', 'lokasi'].forEach(id => document.getElementById(id).disabled = false);
+                Array.from(document.getElementById('juri_id').options).forEach(opt => opt.disabled = false);
 
-        function closeFormModal() {
-            document.getElementById('formModal').classList.replace('flex', 'hidden');
-        }
+                if (mode === 'create') {
+                    titleEl.textContent = 'Buat Jadwal Baru';
+                    form.action = `{{ route('admin.schedules.store') }}`;
+                    methodInput.value = 'POST';
+                    submitBtn.style.display = '';
+                }
+                if (mode === 'edit') {
+                    titleEl.textContent = 'Edit Jadwal';
+                    form.action = `/admin/schedules/${data.id}`;
+                    methodInput.value = 'PUT';
+                    document.getElementById('peserta_id').value = data.peserta_id;
+                    document.getElementById('tanggal').value = data.tanggal;
+                    document.getElementById('lokasi').value = data.lokasi;
+                    Array.from(document.getElementById('juri_id').options).forEach(opt => opt.selected = data.juri_ids.includes(
+                        opt.value));
+                    submitBtn.style.display = '';
+                }
+                if (mode === 'detail') {
+                    titleEl.textContent = 'Detail Jadwal';
+                    submitBtn.style.display = 'none';
+                    ['peserta_id', 'tanggal', 'lokasi'].forEach(id => {
+                        const el = document.getElementById(id);
+                        el.value = data[id];
+                        el.disabled = true;
+                    });
+                    Array.from(document.getElementById('juri_id').options).forEach(opt => {
+                        opt.selected = data.juri_ids.includes(opt.value);
+                        opt.disabled = true;
+                    });
+                }
+            }
 
-        function openDetailModal(id) {
-            const url = `{{ route('admin.schedules.detail', ['schedule' => '__ID__']) }}`.replace('__ID__', id);
-            fetch(url, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(r => r.text())
-                .then(html => {
-                    document.getElementById('detailContent').innerHTML = html;
-                    document.getElementById('detailModal').classList.replace('hidden', 'flex');
-                });
-        }
-
-        function closeDetailModal() {
-            document.getElementById('detailModal').classList.replace('flex', 'hidden');
-        }
-    </script>
+            function closeModal() {
+                modal.classList.replace('flex', 'hidden');
+            }
+        </script>
+    @endpush
 @endsection

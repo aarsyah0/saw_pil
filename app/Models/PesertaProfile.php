@@ -48,4 +48,13 @@ class PesertaProfile extends Model
     {
         return $this->user?->name;
     }
+    public function cuSelection()
+    {
+        return $this->hasMany(
+            \App\Models\CuSelection::class,
+            'peserta_id',    // FK di cu_selection
+            'user_id'        // PK di peserta_profile
+        );
+    }
+
 }
