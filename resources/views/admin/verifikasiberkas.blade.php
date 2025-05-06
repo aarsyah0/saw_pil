@@ -106,9 +106,13 @@
                                         Setuju
                                     </button>
                                 </form>
-                                <button onclick="openRejectModal({{ $submission->id }})"
+                                <button type="button"
+                                    data-reject-url="{{ route('admin.verification.reject', $submission->id) }}"
+                                    onclick="openRejectModal(this)"
                                     class="px-2 py-1 text-xs rounded bg-red-500 hover:bg-red-600 text-white"
-                                    {{ $submission->file_path ? '' : 'disabled' }}>Tolak</button>
+                                    {{ $submission->file_path ? '' : 'disabled' }}>
+                                    Tolak
+                                </button>
                             </td>
                         </tr>
                     @empty
@@ -124,35 +128,35 @@
         <div id="reject-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
             <div class="bg-white p-6 rounded shadow-lg w-1/3">
                 <h2 class="text-xl font-semibold mb-4">Tolak Submission</h2>
-                <form id="reject-form" method="POST">
+                <form method="POST" id="reject-form" action="">
                     @csrf
-                    <div class="mb-4">
-                        <label for="comment" class="block text-sm font-medium mb-1">Komentar</label>
-                        <textarea name="comment" id="comment" rows="4" class="w-full border border-gray-300 rounded p-2" required></textarea>
-                    </div>
+                    <textarea name="comment" required class="w-full border rounded p-2 mb-4" placeholder="Berikan alasan penolakan"></textarea>
                     <div class="flex justify-end space-x-2">
                         <button type="button" onclick="closeRejectModal()"
-                            class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">Batal</button>
+                            class="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400">Batal</button>
                         <button type="submit"
-                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">Kirim</button>
+                            class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Kirim</button>
                     </div>
                 </form>
+
+
             </div>
         </div>
     </div>
-
-    @push('scripts')
-        <script>
-            function openRejectModal(id) {
-                const modal = document.getElementById('reject-modal');
-                const form = document.getElementById('reject-form');
-                form.action = `/admin/cu-verifikasi/${id}/reject`;
-                modal.classList.remove('hidden');
-            }
-
-            function closeRejectModal() {
-                document.getElementById('reject-modal').classList.add('hidden');
-            }
-        </script>
-    @endpush
 @endsection
+
+@push('scripts')
+    <script>
+        function openRejectModal(button) {
+            const url = button.getAttribute('data-reject-url');
+            const modal = document.getElementById('reject-modal');
+            const form = modal.querySelector('form');
+            form.action = url;
+            modal.classList.remove('hidden');
+        }
+
+        function closeRejectModal() {
+            document.getElementById('reject-modal').classList.add('hidden');
+        }
+    </script>
+@endpush

@@ -131,15 +131,20 @@ class CuVerificationController extends Controller
                          ->with('success', 'Submission CU berhasil disetujui.');
     }
 
-    public function reject(CuSubmission $submission, Request $request)
-    {
-        $request->validate(['comment' => 'required|string']);
-        $submission->update([
-            'status'      => CuSubmission::STATUS_REJECTED,
-            'reviewed_at' => now(),
-            'comment'     => $request->comment,
-        ]);
-        return redirect()->route('admin.verification.index')
-                         ->with('success', 'Submission CU ditolak.');
-    }
+    public function reject(Request $request, CuSubmission $submission)
+{
+    $request->validate([
+        'comment' => 'required|string',
+    ]);
+
+    $submission->status = CuSubmission::STATUS_REJECTED;
+    $submission->comment = $request->comment;
+    $submission->reviewed_at = now();
+    $submission->save();
+
+    // ✅ Redirect untuk mencegah browser mengulang GET ke URL POST
+    return redirect()->route('admin.verification.index')->with('success', 'Submission berhasil ditolak.');
+}
+
+
 }

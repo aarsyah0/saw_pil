@@ -11,15 +11,17 @@
                 </a>
             </li>
             <li class="mb-2">
-                <a href="#"
-                    class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition {{ Request::routeIs('juri.peserta') ? 'bg-white font-bold shadow' : '' }}">
+                <a href="{{ route('juri.peserta.index') }}"
+                    class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition
+                          {{ Request::routeIs('juri.peserta*') ? 'bg-white font-bold shadow' : '' }}">
                     <i class="bi bi-person text-lg mr-3"></i> Peserta
                 </a>
             </li>
             <li class="mb-2">
-                <a href="#"
-                    class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition {{ Request::routeIs('juri.jadwal') ? 'bg-white font-bold shadow' : '' }}">
-                    <i class="bi bi-alarm text-lg mr-3"></i> Jadwal
+                <a href="{{ route('juri.jadwal.index') }}"
+                    class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition
+                          {{ Request::routeIs('juri.jadwal*') ? 'bg-white font-bold shadow' : '' }}">
+                    <i class="bi bi-clock text-lg mr-3"></i> Jadwal
                 </a>
             </li>
             <li class="mb-2">

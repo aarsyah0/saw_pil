@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
+use App\Models\PesertaProfile;
+use App\Models\AdminProfile;
+use App\Models\JuriProfile;
 
 class User extends Authenticatable
 {
@@ -59,5 +62,30 @@ class User extends Authenticatable
 {
     return $this->belongsToMany(SchedulePiBi::class, 'schedule_pibi_user', 'user_id', 'schedule_pibi_id');
 }
+public function adminProfile()
+{
+    return $this->hasOne(AdminProfile::class, 'user_id');
+}
 
+public function juriProfile()
+    {
+        return $this->hasOne(JuriProfile::class, 'user_id');
+    }
+
+    public function profile()
+    {
+        if ($this->role === 'admin') {
+            return $this->adminProfile;
+        }
+
+        if ($this->role === 'juri') {
+            return $this->juriProfile;
+        }
+
+        if ($this->role === 'peserta') {
+            return $this->pesertaProfile;
+        }
+
+        return null;
+    }
 }

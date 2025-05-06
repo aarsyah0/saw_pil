@@ -17,7 +17,7 @@
 
             <!-- Manajemen Akun -->
             <li class="mb-2">
-                <a href="{{ route('admin.manajemen-akun') }}"
+                <a href="{{ route('admin.manajemen-akun.index') }}"
                     class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition
                     {{ Request::routeIs('admin.manajemen-akun') ? 'bg-white font-bold shadow' : '' }}">
                     <i class="bi bi-people-fill text-lg mr-3"></i>
@@ -149,7 +149,7 @@
 
 
             <!-- Notifikasi & Eail -->
-            <li class="mb-2" x-data="{ openNotif: false }">
+            {{-- <li class="mb-2" x-data="{ openNotif: false }">
                 <button @click="openNotif = !openNotif"
                     class="flex items-center justify-between w-full py-3 px-4 rounded-lg hover:bg-gray-200 transition">
                     <div class="flex items-center">
@@ -168,7 +168,7 @@
                         </li>
                     </ul>
                 </div>
-            </li>
+            </li> --}}
 
             <!-- Logout -->
             <li class="mt-6">

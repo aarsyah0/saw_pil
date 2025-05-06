@@ -8,16 +8,8 @@ use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\JadwalController;
 use App\Http\Controllers\User\HasilController;
-use App\Http\Controllers\Admin\dataBidangController;
-use App\Http\Controllers\Admin\dataWujudController;
-use App\Http\Controllers\Admin\dataKategoriController;
-use App\Http\Controllers\Admin\BasisPengetahuanController;
 use App\Http\Controllers\Admin\LandingPageController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\PenilaianAlternatifController;
-use App\Http\Controllers\Admin\ProsesPerhitunganController;
-use App\Http\Controllers\Admin\JadwalAdminController;
-use App\Http\Controllers\Admin\DataHasilController;
 use App\Http\Controllers\Juri\DashboardJuriController;
 use App\Http\Controllers\Juri\PesertaController;
 use App\Http\Controllers\Juri\JadwalJuriController;
@@ -67,9 +59,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/juri/peserta', [PesertaController::class, 'index'])->name('juri.peserta');
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/juri/jadwal', [JadwalJuriController::class, 'index'])->name('juri.jadwal');
-});
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/juri/presentasi', [PresentasiController::class, 'index'])->name('juri.presentasi');
@@ -103,22 +92,8 @@ Route::put('/schedules/{schedule}', [LandingPageController::class, 'updateSchedu
 Route::delete('/schedules/{schedule}', [LandingPageController::class, 'destroySchedule'])->name('schedules.destroy');
 
 
-    // other admin modules…
-    Route::get('data-bidang',        [dataBidangController::class,'index'])->name('dataBidang');
-    Route::get('data-wujud',         [dataWujudController::class,'index'])->name('dataWujud');
-    Route::get('data-kategori',      [dataKategoriController::class,'index'])->name('dataKategori');
-    Route::get('basis-pengetahuan',  [BasisPengetahuanController::class,'index'])->name('basisPengetahuan');
-    Route::get('data-hasil',         [DataHasilController::class,'index'])->name('dataHasil');
-    Route::get('jadwal',             [JadwalAdminController::class,'index'])->name('jadwal.index');
-    Route::get('jadwal/create',      [JadwalAdminController::class,'create'])->name('jadwal.create');
-    Route::post('jadwal',            [JadwalAdminController::class,'store'])->name('jadwal.store');
-    Route::get('proses-perhitungan', [ProsesPerhitunganController::class,'index'])->name('proses-perhitungan');
-    Route::get('penilaian-alternatif',          [PenilaianAlternatifController::class,'index'])->name('penilaian-alternatif');
-    Route::post('penilaian-alternatif/update',  [PenilaianAlternatifController::class,'update'])->name('penilaian-alternatif.update');
     Route::get('manajemen-akun', [ManajemenAkunController::class, 'index'])
     ->name('manajemen-akun');
-    Route::get('verifikasi-berkas', [VerifikasiBerkasController::class, 'index'])
-    ->name('verifikasi-berkas');
 
 });
 
@@ -180,20 +155,22 @@ Route::prefix('admin')
 
 
 
-Route::middleware(['auth'])   // Hanya auth, tanpa is_admin
+Route::middleware('auth')
      ->prefix('admin')
      ->name('admin.')
-     ->group(function() {
+     ->group(function(){
+         Route::get('cu-verification', [CuVerificationController::class,'index'])
+              ->name('verification.index');
+         Route::post('cu-verification/{submission}/approve',[CuVerificationController::class,'approve'])
+              ->name('verification.approve');
+         Route::post('cu-verifikasi/{submission}/reject',[CuVerificationController::class,'reject'])
+              ->name('verification.reject');
+              Route::get('admin/cu-verification/{submission}/reject', function () {
+                return redirect()->route('admin.verification.index');
+            });
 
-    Route::get('cu-verification', [CuVerificationController::class, 'index'])
-         ->name('verification.index');
+     });
 
-    Route::post('cu-verification/{submission}/approve', [CuVerificationController::class, 'approve'])
-         ->name('verification.approve');
-
-    Route::post('cu-verification/{submission}/reject', [CuVerificationController::class, 'reject'])
-         ->name('verification.reject');
-});
 
 Route::prefix('admin')->name('admin.')->group(function(){
     // daftar CU selection
@@ -320,3 +297,29 @@ Route::middleware('auth')->prefix('user')->group(function() {
          ->name('user.jadwal');
 });
 
+Route::prefix('juri')
+    ->middleware('auth')
+    ->name('juri.')
+    ->group(function() {
+        Route::get('jadwal', [JadwalJuriController::class, 'index'])
+             ->name('jadwal.index');
+});
+
+Route::prefix('juri')
+    ->middleware('auth')
+    ->name('juri.')
+    ->group(function() {
+        // daftar peserta
+        Route::get('peserta', [\App\Http\Controllers\Juri\PesertaController::class, 'index'])
+             ->name('peserta.index');
+
+        // detail peserta
+        Route::get('peserta/{id}', [\App\Http\Controllers\Juri\PesertaController::class, 'show'])
+             ->name('peserta.show');
+});
+
+// routes/web.php
+
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function(){
+    Route::resource('manajemen-akun', \App\Http\Controllers\Admin\ManajemenAkunController::class);
+});

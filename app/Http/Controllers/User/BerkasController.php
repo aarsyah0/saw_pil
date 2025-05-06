@@ -92,16 +92,16 @@ class BerkasController extends Controller
      * Hapus berkas CU jika masih pending.
      */
     public function destroy(CuSubmission $berkas)
-    {
-        $this->authorize('delete', $berkas);
-
-        if ($berkas->status !== 'pending') {
-            return back()->withErrors('Berkas yang sudah direview tidak dapat dihapus.');
-        }
-
+{
+    // Hapus file jika ada
+    if ($berkas->file_path && Storage::disk('public')->exists($berkas->file_path)) {
         Storage::disk('public')->delete($berkas->file_path);
-        $berkas->delete();
-
-        return back()->with('success', 'Berkas berhasil dihapus.');
     }
+
+    // Hapus record
+    $berkas->delete();
+
+    return back()->with('success', 'Berkas berhasil dihapus.');
+}
+
 }

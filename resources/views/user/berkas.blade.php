@@ -36,14 +36,30 @@
         <!-- Table Card -->
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                <table class="min-w-full divide-y divide-gray-200 table-fixed">
                     <thead class="bg-gray-50">
                         <tr>
-                            @foreach (['#', 'Kategori', 'Tanggal Unggah', 'Status', 'Skor', 'Aksi'] as $header)
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ $header }}
-                                </th>
-                            @endforeach
+                            <th
+                                class="w-1/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                No</th>
+                            <th
+                                class="w-3/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Kategori</th>
+                            <th
+                                class="w-2/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tanggal Unggah</th>
+                            <th
+                                class="w-1/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status</th>
+                            <th
+                                class="w-1/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Skor</th>
+                            <th
+                                class="w-3/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Komentar</th>
+                            <th
+                                class="w-1/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -51,43 +67,43 @@
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $loop->iteration }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ optional($item->kategori)->wujud_cu ?? '-' }}<br>
-                                    <span class="text-xs text-gray-500">Level
-                                        {{ optional($item->kategori)->level_id ?? '' }}</span>
+                                    <div class="font-medium">{{ optional($item->kategori)->wujud_cu ?? '-' }}</div>
+                                    <div class="text-xs text-gray-500">Level {{ optional($item->kategori)->level_id ?? '' }}
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ $item->submitted_at->format('d M Y H:i') }}
-                                </td>
+                                    {{ $item->submitted_at->format('d M Y H:i') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                {{ $item->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : ($item->status == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') }}">
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $item->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ($item->status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') }}">
                                         {{ ucfirst($item->status) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $item->skor }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                    <a href="{{ Storage::url($item->file_path) }}" target="_blank"
-                                        class="underline text-blue-600">
-                                        Unduh
-                                    </a>
-                                    @if ($item->status === 'pending')
-                                        <form action="{{ route('berkas.destroy', $item->id) }}" method="POST"
-                                            class="inline">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900"
-                                                onclick="return confirm('Yakin ingin menghapus?')">
-                                                Hapus
-                                            </button>
-                                        </form>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    {{ number_format($item->skor, 2) }}</td>
+                                <td class="px-6 py-4 whitespace-pre-wrap text-sm text-gray-700">
+                                    @if ($item->status === 'rejected')
+                                        {!! nl2br(e($item->comment)) !!}
+                                    @else
+                                        &mdash;
                                     @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <a href="{{ Storage::url($item->file_path) }}" target="_blank"
+                                        class="underline text-blue-600">Unduh</a>
+                                    <form action="{{ route('berkas.destroy', $item->id) }}" method="POST"
+                                        class="inline ml-2">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-900"
+                                            onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">
-                                    Belum ada submission.
-                                </td>
+                                <td colspan="7" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">Belum ada
+                                    submission.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -95,11 +111,10 @@
             </div>
         </div>
 
-        <!-- Modal Backdrop -->
+        <!-- Modal untuk Unggah Berkas -->
         <div x-show="showModal"
             class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center p-4 z-50"
             x-transition.opacity>
-            <!-- Modal -->
             <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6" x-transition.scale>
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xl font-semibold text-gray-800">Unggah Berkas CU</h3>
@@ -117,7 +132,7 @@
                             @foreach ($kategoris as $k)
                                 <option value="{{ $k->id }}"
                                     {{ old('kategori_cu_id') == $k->id ? 'selected' : '' }}>
-                                    {{ $k->wujud_cu }} (Lv {{ $k->level_id }}) – Skor {{ $k->skor }}
+                                    {{ $k->wujud_cu }} (Lv {{ $k->level_id }}) – Skor {{ number_format($k->skor, 2) }}
                                 </option>
                             @endforeach
                         </select>
@@ -129,30 +144,19 @@
                         <label for="file" class="block text-sm font-medium text-gray-700 mb-1">File (PDF/ZIP, max
                             10MB)</label>
                         <input type="file" name="file" id="file" accept=".pdf,.zip"
-                            class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4
-                        file:rounded-md file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-blue-50 file:text-blue-700
-                        hover:file:bg-blue-100" />
+                            class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
                         @error('file')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
                     <div class="flex justify-end space-x-3">
                         <button type="button" @click="showModal = false"
-                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition">
-                            Batal
-                        </button>
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition">Batal</button>
                         <button type="submit"
-                            class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
-                            Unggah
-                        </button>
+                            class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">Unggah</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
-    <!-- Alpine.js -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 @endsection

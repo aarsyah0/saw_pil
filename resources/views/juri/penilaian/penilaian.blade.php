@@ -6,8 +6,7 @@
     <div x-data="penilaian()" class="space-y-6">
 
         {{-- Header --}}
-        <div
-            class="bg-gradient-to-r from-purple-100 to-purple-200 p-6 rounded-3xl shadow-lg flex items-center justify-between">
+        <div class="bg-[#E7EFF6] p-6 rounded-3xl shadow-lg flex items-center justify-between">
             <h1 class="text-3xl font-extrabold text-gray-900">Daftar Penilaian</h1>
             <span class="text-gray-700">Total Jadwal: <strong>{{ $schedules->count() }}</strong></span>
         </div>
