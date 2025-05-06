@@ -1,3 +1,4 @@
+<!-- resources/views/admin/bobot.blade.php -->
 @extends('admin.layouts.master')
 
 @section('content')
@@ -5,6 +6,10 @@
         <!-- Header & Tambah -->
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-2xl font-semibold text-gray-800">Manajemen Bobot Kriteria</h2>
+            <button @click="openCreate()"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <i class="bi bi-plus-lg mr-2"></i>Tambah Bobot
+            </button>
         </div>
 
         <!-- Alert Success -->
@@ -98,6 +103,32 @@
     <script>
         function modalData() {
             return {
+                showModal: false,
+                isEdit: false,
+                modalTitle: '',
+                submitText: '',
+                formAction: '',
+                selectedKriteria: '',
+                bobotValue: '',
+                sessionSuccess: '{{ session('success') }}',
+
+                init() {
+                    // jika redirect dengan session success, munculkan alert
+                    if (this.sessionSuccess) {
+                        setTimeout(() => this.sessionSuccess = '', 5000);
+                    }
+                },
+
+                openCreate() {
+                    this.showModal = true;
+                    this.isEdit = false;
+                    this.modalTitle = 'Tambah Bobot Kriteria';
+                    this.submitText = 'Simpan';
+                    this.formAction = '{{ route('admin.bobot-kriteria.store') }}';
+                    this.selectedKriteria = '';
+                    this.bobotValue = '';
+                },
+
                 openEdit(event) {
                     const btn = event.currentTarget;
                     this.showModal = true;
@@ -108,11 +139,13 @@
                     this.selectedKriteria = btn.dataset.nama;
                     this.bobotValue = btn.dataset.bobot;
                 },
+
                 closeModal() {
                     this.showModal = false;
                 },
+
                 closeAlert() {
-                    // nothing additional
+                    this.sessionSuccess = '';
                 }
             }
         }

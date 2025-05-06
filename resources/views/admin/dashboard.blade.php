@@ -5,117 +5,93 @@
 
 @section('content')
 
-    <div class="flex justify-center gap-16 mt-8">
-        <!-- Card Pengguna -->
-        <div class="bg-gray-100 p-5 rounded-3xl shadow-md flex items-center w-60 h-36">
-            <div class="flex-shrink-0 mr-3">
-                <i class="bi bi-people-fill text-5xl text-gray-700"></i>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <!-- Card Peserta -->
+        <div
+            class="group p-6 rounded-2xl shadow-lg transform transition duration-500 bg-gradient-to-r from-blue-400 to-blue-600 text-white flex items-center hover:shadow-2xl hover:scale-105">
+            <div
+                class="p-4 bg-white bg-opacity-20 rounded-full transition-transform duration-300 group-hover:animate-bounce">
+                <i class="bi bi-people-fill text-3xl"></i>
             </div>
-            <div class="flex flex-col pl-10">
-                <h5 class="text-lg font-semibold text-gray-600">Peserta</h5>
-                <h2 class="text-3xl font-bold text-gray-800 mt-4">10</h2>
+            <div class="ml-4">
+                <h5 class="text-sm font-medium uppercase">Peserta</h5>
+                <h2 class="text-2xl font-bold mt-1">{{ $totalPeserta }}</h2>
             </div>
         </div>
 
-        <!-- Card Berkas -->
-        <div class="bg-gray-100 p-5 rounded-3xl shadow-md flex items-center w-60 h-36">
-            <div class="flex-shrink-0 mr-3">
-                <i class="bi bi-file-earmark-fill text-5xl text-gray-700"></i>
+        <!-- Card Total Berkas -->
+        <div
+            class="group p-6 rounded-2xl shadow-lg transform transition duration-500 bg-gradient-to-r from-green-400 to-green-600 text-white flex items-center hover:shadow-2xl hover:scale-105">
+            <div class="p-4 bg-white bg-opacity-20 rounded-full transition-transform duration-300 group-hover:animate-pulse">
+                <i class="bi bi-file-earmark-fill text-3xl"></i>
             </div>
-            <div class="flex flex-col pl-10">
-                <h5 class="text-lg font-semibold text-gray-600">Berkas</h5>
-                <h2 class="text-3xl font-bold text-gray-800 mt-4">7</h2>
+            <div class="ml-4">
+                <h5 class="text-sm font-medium uppercase">Total Berkas</h5>
+                <h2 class="text-2xl font-bold mt-1">{{ $totalBerkas }}</h2>
+                <span class="text-xs opacity-75">Pending: {{ $pendingBerkas }}</span>
+            </div>
+        </div>
+
+        <!-- Card Pemenang -->
+        <div
+            class="group p-6 rounded-2xl shadow-lg transform transition duration-500 bg-gradient-to-r from-purple-400 to-purple-600 text-white hover:shadow-2xl hover:scale-105">
+            <h5 class="text-sm font-medium uppercase mb-4">Pemenang Teratas</h5>
+            <div class="space-y-3">
+                @foreach ($winners as $index => $win)
+                    <div class="flex items-center transition-transform duration-300 group-hover:translate-x-2">
+                        <span class="w-6">#{{ $index + 1 }}</span>
+                        <div class="ml-3">
+                            <p class="text-sm font-semibold">{{ $win->peserta->user->name }}</p>
+                            <p class="text-xs opacity-75">Skor: {{ number_format($win->total_akhir, 2) }}</p>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>
 
-    <!-- Card 3: Tabel Berkas -->
-    <div class="bg-white p-8 mt-8 rounded-lg shadow-md">
-        <h4 class="text-xl font-semibold mb-4">Berkas Terbaru</h4>
-
-        <table class="w-full table-auto border-collapse border border-gray-300">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="border p-2 text-left whitespace-normal">No</th>
-                    <th class="border p-2 text-left whitespace-normal">Nama Mahasiswa</th>
-                    <th class="border p-2 text-left whitespace-normal">Nama Berkas</th>
-                    <th class="border p-2 text-left whitespace-normal">Nama Bidang</th>
-                    <th class="border p-2 text-left whitespace-normal">Nama Wujud</th>
-                    <th class="border p-2 text-left whitespace-normal">Kategori</th>
-                    <th class="border p-2 text-center whitespace-normal">Jenis</th>
-                    <th class="border p-2 text-center whitespace-normal">Status</th>
-                    <th class="border p-2 text-center whitespace-normal">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Baris statis 1 -->
-                <tr class="bg-white hover:bg-gray-100 transition">
-                    <td class="border p-2 text-sm">1</td>
-                    <td class="border p-2 text-sm">Andi</td>
-                    <td class="border p-2 text-sm whitespace-normal break-words">
-                        <div class="flex items-start">
-                            <span class="truncate" style="max-width: 200px;">
-                                SertifikatLiterasiDigital.pdf
-                            </span>
-                            <a href="/berkas/1"
-                                class="ml-2 flex-shrink-0 bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </td>
-                    <td class="border p-2 text-sm">Kompetisi</td>
-                    <td class="border p-2 text-sm">Perorangan</td>
-                    <td class="border p-2 text-sm">Internasional</td>
-                    <td class="border p-2 text-center text-sm">CU</td>
-                    <td class="border p-2 text-center text-sm text-yellow-500">Menunggu</td>
-                    <td class="border p-2 text-center">
-                        <div class="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0 justify-center">
-                            <button
-                                class="w-full sm:w-auto bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs">
-                                Setujui
-                            </button>
-                            <button
-                                class="w-full sm:w-auto bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-xs">
-                                Tolak
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-
-                <!-- Baris statis 2 -->
-                <tr class="bg-gray-50 hover:bg-gray-100 transition">
-                    <td class="border p-2 text-sm">2</td>
-                    <td class="border p-2 text-sm">Budi</td>
-                    <td class="border p-2 text-sm whitespace-normal break-words">
-                        <div class="flex items-start">
-                            <span class="truncate" style="max-width: 200px;">
-                                SertifikatKepanitiaan.pdf
-                            </span>
-                            <a href="/berkas/2"
-                                class="ml-2 flex-shrink-0 bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </td>
-                    <td class="border p-2 text-sm">Kompetisi</td>
-                    <td class="border p-2 text-sm">Tim</td>
-                    <td class="border p-2 text-sm">Nasional</td>
-                    <td class="border p-2 text-center text-sm">CU</td>
-                    <td class="border p-2 text-center text-sm text-red-500">Ditolak</td>
-                    <td class="border p-2 text-center">
-                        <div class="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0 justify-center">
-                            <button
-                                class="w-full sm:w-auto bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs">
-                                Setujui
-                            </button>
-                            <button
-                                class="w-full sm:w-auto bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-xs">
-                                Tolak
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Tabel Berkas Terbaru -->
+    <div class="bg-white p-6 mt-8 rounded-2xl shadow-lg">
+        <h4 class="text-lg font-semibold mb-4 text-gray-700">Berkas Terbaru</h4>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">No</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">File</th>
+                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-100">
+                    @foreach ($latestSubmissions as $i => $sub)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-sm text-gray-600">{{ $i + 1 }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-800">{{ $sub->peserta->user->name }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-800 truncate" style="max-width: 180px;">
+                                {{ $sub->file_path }}</td>
+                            <td class="px-4 py-3 text-sm text-center">
+                                @php
+                                    $colors = [
+                                        'pending' => 'bg-yellow-100 text-yellow-800',
+                                        'approved' => 'bg-green-100 text-green-800',
+                                        'rejected' => 'bg-red-100 text-red-800',
+                                    ];
+                                @endphp
+                                <span
+                                    class="px-2 py-1 rounded-full text-xs font-semibold {{ $colors[$sub->status] ?? 'bg-gray-100 text-gray-800' }}">
+                                    {{ ucfirst($sub->status) }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-center">
+                                <a href="{{ route('admin.submissions.show', $sub->id) }}"
+                                    class="inline-block px-3 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition">Detail</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 @endsection

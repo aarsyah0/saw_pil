@@ -23,20 +23,21 @@ class KategoriCuController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'bidang_id'  => 'required|exists:bidang_cu,id',
-            'wujud_cu'   => 'required|string|max:100',
-            'kode'       => 'required|string|max:4',
-            'level_id'   => 'required|exists:level_cu,level',
-            'skor'       => 'required|numeric|min:0',
-        ]);
+{
+    $request->validate([
+        'bidang_id' => 'required|exists:bidang_cu,id',
+        'wujud_cu'  => 'required|string|max:100',
+        'kode'      => 'required|string|max:4',
+        'level_id'  => 'required|exists:level_cu,level',
+        'skor'      => 'required|numeric|min:0',
+    ]);
 
-        KategoriCu::create($request->only('bidang_id','wujud_cu','kode','level_id','skor'));
+    KategoriCu::create($request->only('bidang_id','wujud_cu','kode','level_id','skor'));
 
-        return redirect()->route('admin.kategori-cu.index')
-                         ->with('success','Kategori CU berhasil ditambahkan.');
-    }
+    return redirect()->route('admin.kategori-cu.index')
+                     ->with('success','Kategori CU berhasil ditambahkan.');
+}
+
 
     public function update(Request $request, KategoriCu $kategoriCu)
 {
