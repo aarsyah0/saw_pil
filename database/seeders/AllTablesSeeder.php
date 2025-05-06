@@ -91,79 +91,79 @@ class AllTablesSeeder extends Seeder
         ]);
 
         // CU Submission
-        DB::table('cu_submission')->insert([
-            ['id'=>1,'peserta_id'=>2,'kategori_cu_id'=>1,'file_path'=>'cu1.pdf','submitted_at'=>'2025-04-30 10:00:00','status'=>'approved','reviewed_at'=>'2025-04-30 11:00:00','comment'=>null,'skor'=>50],
-            ['id'=>2,'peserta_id'=>2,'kategori_cu_id'=>33,'file_path'=>'cu2.pdf','submitted_at'=>'2025-04-30 10:05:00','status'=>'pending','reviewed_at'=>null,'comment'=>null,'skor'=>null],
-        ]);
+        // DB::table('cu_submission')->insert([
+        //     ['id'=>1,'peserta_id'=>2,'kategori_cu_id'=>1,'file_path'=>'cu1.pdf','submitted_at'=>'2025-04-30 10:00:00','status'=>'approved','reviewed_at'=>'2025-04-30 11:00:00','comment'=>null,'skor'=>50],
+        //     ['id'=>2,'peserta_id'=>2,'kategori_cu_id'=>33,'file_path'=>'cu2.pdf','submitted_at'=>'2025-04-30 10:05:00','status'=>'pending','reviewed_at'=>null,'comment'=>null,'skor'=>null],
+        // ]);
 
-        // Penilaian Akhir
-        DB::table('penilaian_akhir')->insert([
-            'peserta_id'     => 2,
-            'skor_cu_normal' => 0.80,
-            'skor_pi_normal' => 0.78,
-            'skor_bi_normal' => 0.84,
-            'total_akhir'    => 0.80*0.40 + 0.78*0.40 + 0.84*0.20,
-        ]);
+        // // Penilaian Akhir
+        // DB::table('penilaian_akhir')->insert([
+        //     'peserta_id'     => 2,
+        //     'skor_cu_normal' => 0.80,
+        //     'skor_pi_normal' => 0.78,
+        //     'skor_bi_normal' => 0.84,
+        //     'total_akhir'    => 0.80*0.40 + 0.78*0.40 + 0.84*0.20,
+        // ]);
 
-        // CU Selection
-        DB::table('cu_selection')->insert([
-            'id'              => 1,
-            'peserta_id'      => 2,
-            'level_id'        => 'A',
-            'selection_round' => 1,
-            'status_lolos'    => 'lolos',
-            'selected_at'     => '2025-04-30 11:00:00',
-        ]);
+        // // CU Selection
+        // DB::table('cu_selection')->insert([
+        //     'id'              => 1,
+        //     'peserta_id'      => 2,
+        //     'level_id'        => 'A',
+        //     'selection_round' => 1,
+        //     'status_lolos'    => 'lolos',
+        //     'selected_at'     => '2025-04-30 11:00:00',
+        // ]);
 
-        // Schedule PI & BI
-        DB::table('schedule_pi_bi')->insert([
-            'id'         => 1,
-            'peserta_id' => 2,
-            'juri_id'    => 3,
-            'tanggal'    => '2025-05-10',
-            'lokasi'     => 'Lab TI Polije',
-            'created_at' => '2025-04-30 12:00:00',
-        ]);
+        // // Schedule PI & BI
+        // DB::table('schedule_pi_bi')->insert([
+        //     'id'         => 1,
+        //     'peserta_id' => 2,
+        //     'juri_id'    => 3,
+        //     'tanggal'    => '2025-05-10',
+        //     'lokasi'     => 'Lab TI Polije',
+        //     'created_at' => '2025-04-30 12:00:00',
+        // ]);
 
-        // Penilaian BI Juri
-        DB::table('penilaian_bi_juri')->insert([
-            'id'                  => 1,
-            'schedule_id'         => 1,
-            'content_score'       => 80,
-            'accuracy_score'      => 75,
-            'fluency_score'       => 85,
-            'pronunciation_score' => 90,
-            'overall_perf_score'  => 88,
-            'scored_at'           => '2025-05-10 09:00:00',
-        ]);
+        // // Penilaian BI Juri
+        // DB::table('penilaian_bi_juri')->insert([
+        //     'id'                  => 1,
+        //     'schedule_id'         => 1,
+        //     'content_score'       => 80,
+        //     'accuracy_score'      => 75,
+        //     'fluency_score'       => 85,
+        //     'pronunciation_score' => 90,
+        //     'overall_perf_score'  => 88,
+        //     'scored_at'           => '2025-05-10 09:00:00',
+        // ]);
 
-        // Penilaian PI Juri
-        DB::table('penilaian_pi_juri')->insert([
-            'id'                            => 1,
-            'schedule_id'                   => 1,
-            'penyajian'                     => 80,
-            'substansi_masalah_fakta'       => 75,
-            'substansi_masalah_identifikasi'=> 78,
-            'substansi_masalah_penerima'    => 80,
-            'substansi_solusi_tujuan'       => 82,
-            'substansi_solusi_smart'        => 85,
-            'substansi_solusi_langkah'      => 80,
-            'substansi_solusi_kebutuhan'    => 78,
-            'kualitas_keunikan'             => 80,
-            'kualitas_orisinalitas'         => 82,
-            'kualitas_kelayakan'            => 85,
-            'scored_at'                     => '2025-05-10 10:00:00',
-        ]);
+        // // Penilaian PI Juri
+        // DB::table('penilaian_pi_juri')->insert([
+        //     'id'                            => 1,
+        //     'schedule_id'                   => 1,
+        //     'penyajian'                     => 80,
+        //     'substansi_masalah_fakta'       => 75,
+        //     'substansi_masalah_identifikasi'=> 78,
+        //     'substansi_masalah_penerima'    => 80,
+        //     'substansi_solusi_tujuan'       => 82,
+        //     'substansi_solusi_smart'        => 85,
+        //     'substansi_solusi_langkah'      => 80,
+        //     'substansi_solusi_kebutuhan'    => 78,
+        //     'kualitas_keunikan'             => 80,
+        //     'kualitas_orisinalitas'         => 82,
+        //     'kualitas_kelayakan'            => 85,
+        //     'scored_at'                     => '2025-05-10 10:00:00',
+        // ]);
 
-        // Naskah PI
-        DB::table('naskah_pi')->insert([
-            'id'             => 1,
-            'peserta_id'     => 2,
-            'judul'          => 'Inovasi Aplikasi X',
-            'abstrak'        => 'Ringkasan...',
-            'isi'            => 'Isi lengkap...',
-            'tanggal_upload' => '2025-04-30 13:00:00',
-        ]);
+        // // Naskah PI
+        // DB::table('naskah_pi')->insert([
+        //     'id'             => 1,
+        //     'peserta_id'     => 2,
+        //     'judul'          => 'Inovasi Aplikasi X',
+        //     'abstrak'        => 'Ringkasan...',
+        //     'isi'            => 'Isi lengkap...',
+        //     'tanggal_upload' => '2025-04-30 13:00:00',
+        // ]);
     }
 
     /**
