@@ -57,38 +57,38 @@ class AllTablesSeeder extends Seeder
         ]);
 
         // Bidang CU
-        DB::table('bidang_cu')->insert([
-            ['id'=>1,'nama'=>'Kompetisi'],
-            ['id'=>2,'nama'=>'Pengakuan'],
-            ['id'=>3,'nama'=>'Penghargaan'],
-            ['id'=>4,'nama'=>'Karir Organisasi'],
-            ['id'=>5,'nama'=>'Hasil Karya'],
-            ['id'=>6,'nama'=>'Pemberdayaan atau Aksi Kemanusiaan'],
-            ['id'=>7,'nama'=>'Kewirausahaan'],
-        ]);
+        // DB::table('bidang_cu')->insert([
+        //     ['id'=>1,'nama'=>'Kompetisi'],
+        //     ['id'=>2,'nama'=>'Pengakuan'],
+        //     ['id'=>3,'nama'=>'Penghargaan'],
+        //     ['id'=>4,'nama'=>'Karir Organisasi'],
+        //     ['id'=>5,'nama'=>'Hasil Karya'],
+        //     ['id'=>6,'nama'=>'Pemberdayaan atau Aksi Kemanusiaan'],
+        //     ['id'=>7,'nama'=>'Kewirausahaan'],
+        // ]);
 
-        // Level CU
-        DB::table('level_cu')->insert([
-            ['level'=>'A','description'=>'Internasional'],
-            ['level'=>'B','description'=>'Regional'],
-            ['level'=>'C','description'=>'Nasional'],
-            ['level'=>'D','description'=>'Provinsi'],
-            ['level'=>'E','description'=>'Kab/Kota/PT'],
-        ]);
+        // // Level CU
+        // DB::table('level_cu')->insert([
+        //     ['level'=>'A','description'=>'Internasional'],
+        //     ['level'=>'B','description'=>'Regional'],
+        //     ['level'=>'C','description'=>'Nasional'],
+        //     ['level'=>'D','description'=>'Provinsi'],
+        //     ['level'=>'E','description'=>'Kab/Kota/PT'],
+        // ]);
 
-        // Bobot Kriteria - upsert to avoid duplicates
-        DB::table('bobot_kriteria')->upsert([
-            ['nama_kriteria'=>'CU','bobot'=>0.40],
-            ['nama_kriteria'=>'PI','bobot'=>0.40],
-            ['nama_kriteria'=>'BI','bobot'=>0.20],
-        ], ['nama_kriteria'], ['bobot']);
+        // // Bobot Kriteria - upsert to avoid duplicates
+        // DB::table('bobot_kriteria')->upsert([
+        //     ['nama_kriteria'=>'CU','bobot'=>0.40],
+        //     ['nama_kriteria'=>'PI','bobot'=>0.40],
+        //     ['nama_kriteria'=>'BI','bobot'=>0.20],
+        // ], ['nama_kriteria'], ['bobot']);
 
-        // Kategori CU
-        DB::table('kategori_cu')->insert([
-            // bidang 1 contoh
-            ['id'=>1,'bidang_id'=>1,'wujud_cu'=>'Juara-1 Perorangan','kode'=>'1A1','level_id'=>'A','skor'=>50],
-            // ... masukkan semua kategori sesuai Lampiran
-        ]);
+        // // Kategori CU
+        // DB::table('kategori_cu')->insert([
+        //     // bidang 1 contoh
+        //     ['id'=>1,'bidang_id'=>1,'wujud_cu'=>'Juara-1 Perorangan','kode'=>'1A1','level_id'=>'A','skor'=>50],
+        //     // ... masukkan semua kategori sesuai Lampiran
+        // ]);
 
         // CU Submission
         // DB::table('cu_submission')->insert([
