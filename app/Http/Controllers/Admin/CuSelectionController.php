@@ -14,25 +14,35 @@ class CuSelectionController extends Controller
     public function index()
     {
         $latest = CuSelection::select('peserta_id','status_lolos','selected_at')
-            ->where('selection_round',1)
-            ->orderByDesc('selected_at')
-            ->toBase();
+    ->where('selection_round',1)
+    ->orderByDesc('selected_at')
+    ->toBase();
 
-        $selections = CuSelection::select([
-                'cu_selection.peserta_id',
-                DB::raw('SUM(skor_cu)            AS total_skor_cu'),
-                DB::raw('ROUND(SUM(skor_cu)/10,4) AS avg_skor_cu'),
-                'latest.status_lolos',
-                'latest.selected_at',
-            ])
-            ->where('cu_selection.selection_round',1)
-            ->groupBy('cu_selection.peserta_id')
-            ->joinSub($latest,'latest',fn($j)=>
-                $j->on('cu_selection.peserta_id','=','latest.peserta_id')
-            )
-            ->with('peserta.user')
-            ->orderByDesc('avg_skor_cu')
-            ->get();
+    $selections = CuSelection::select([
+        'cu_selection.peserta_id',
+        DB::raw('SUM(skor_cu)            AS total_skor_cu'),
+        DB::raw('ROUND(SUM(skor_cu)/10,4) AS avg_skor_cu'),
+        // sub‑query ambil status_lolos terbaru per peserta
+        DB::raw("(SELECT cs2.status_lolos
+                  FROM cu_selection cs2
+                  WHERE cs2.peserta_id = cu_selection.peserta_id
+                    AND cs2.selection_round = 1
+                  ORDER BY cs2.selected_at DESC
+                  LIMIT 1) AS status_lolos"),
+        // sub‑query ambil selected_at terbaru per peserta
+        DB::raw("(SELECT cs3.selected_at
+                  FROM cu_selection cs3
+                  WHERE cs3.peserta_id = cu_selection.peserta_id
+                    AND cs3.selection_round = 1
+                  ORDER BY cs3.selected_at DESC
+                  LIMIT 1) AS selected_at"),
+    ])
+    ->where('cu_selection.selection_round', 1)
+    ->groupBy('cu_selection.peserta_id')
+    ->with('peserta.user')
+    ->orderByDesc('avg_skor_cu')
+    ->get();
+
 
         return view('admin.selection', compact('selections'));
     }
