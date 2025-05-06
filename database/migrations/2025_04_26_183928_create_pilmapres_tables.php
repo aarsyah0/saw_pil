@@ -124,7 +124,7 @@ return new class extends Migration
         Schema::create('cu_submission', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('peserta_id');
-            $table->unsignedInteger('kategori_cu_id');
+            $table->unsignedBigInteger('kategori_cu_id');
             $table->string('file_path');
             $table->timestamp('submitted_at')->useCurrent();
             $table->enum('status', ['pending','approved','rejected'])->default('pending');
