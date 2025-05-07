@@ -30,9 +30,10 @@ class ProfileController extends Controller
     public function uploadFiles(Request $request)
     {
         $request->validate([
-            'pas_foto'        => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'surat_pengantar' => 'required|mimes:pdf|max:5120',
+            'pas_foto'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'surat_pengantar' => 'nullable|mimes:pdf|max:5120',
         ]);
+
 
         $user    = Auth::user();
         $profile = $user->pesertaProfile ?: new PesertaProfile(['user_id' => $user->id]);
