@@ -31,7 +31,7 @@ class RegisterController extends Controller
             'tanggal_lahir'      => 'required|date',
             'nim'                => 'required|string|max:20|unique:peserta_profile,nim',
             'no_hp'              => 'required|string|max:20',
-            'program_pendidikan' => 'required|in:Diploma,Sarjana',
+            'program_pendidikan' => 'required|in:Diploma3,Diploma4',
             'program_studi'      => 'required|string|max:100',
             'semester_ke'        => 'required|integer|min:1',
             'ipk'                => 'required|numeric|min:0|max:4',
