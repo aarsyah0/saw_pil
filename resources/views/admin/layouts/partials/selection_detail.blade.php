@@ -4,16 +4,12 @@
     <table class="w-full table-auto divide-y divide-gray-200 mb-6">
         <thead class="bg-gray-100">
             <tr>
-                <th class="px-4 py-2 text-left text-sm font-medium">Bidang</th>
-                <th class="px-4 py-2 text-left text-sm font-medium">Nama CU</th>
                 <th class="px-4 py-2 text-left text-sm font-medium">Skor</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
             @forelse($finalSelectedCUs as $cu)
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-2 text-sm">{{ $cu->kategori->bidang->name }}</td>
-                    <td class="px-4 py-2 text-sm">{{ $cu->kategori->nama }}</td>
                     <td class="px-4 py-2 text-sm">{{ number_format($cu->skor, 4) }}</td>
                 </tr>
             @empty

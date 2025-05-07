@@ -70,7 +70,6 @@
                     <ul class="space-y-2 text-gray-700">
                         <li><strong>Waktu Submit:</strong> {{ $submission->submitted_at->format('d M Y, H:i') }}</li>
                         <li><strong>Status Review:</strong> {{ ucfirst($submission->status) }}</li>
-                        <li><strong>Skor CU Anda:</strong> {{ number_format($selection->skor_cu, 4) }}</li>
                     </ul>
                     <p class="mt-4 text-gray-600">
                         Silakan tunggu jadwal tahap berikutnya (PI &amp; BI). Informasi akan diumumkan di halaman<br>
