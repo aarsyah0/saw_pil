@@ -190,12 +190,12 @@
                         <select name="program_pendidikan" id="program_pendidikan"
                             class="mt-1 w-full border rounded-lg p-2">
                             <option value="">-- Pilih --</option>
-                            <option value="Diploma"
-                                {{ old('program_pendidikan', $profile->program_pendidikan) == 'Diploma' ? 'selected' : '' }}>
-                                Diploma</option>
-                            <option value="Sarjana"
-                                {{ old('program_pendidikan', $profile->program_pendidikan) == 'Sarjana' ? 'selected' : '' }}>
-                                Sarjana</option>
+                            <option value="Diploma3"
+                                {{ old('program_pendidikan', $profile->program_pendidikan) == 'Diploma3' ? 'selected' : '' }}>
+                                Diploma3</option>
+                            <option value="Diploma4"
+                                {{ old('program_pendidikan', $profile->program_pendidikan) == 'Diploma4' ? 'selected' : '' }}>
+                                Diploma4</option>
                         </select>
                         @error('program_pendidikan')
                             <p class="text-red-600 text-sm">{{ $message }}</p>
