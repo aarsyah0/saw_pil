@@ -36,7 +36,7 @@ class BerkasController extends Controller
     public function create()
     {
         $kategoris = KategoriCu::all();
-        return view('berkas.create', compact('kategoris'));
+        return view('user.berkas_create', compact('kategoris'));
     }
 
     /**
@@ -44,6 +44,12 @@ class BerkasController extends Controller
      */
     public function store(Request $request)
     {
+        // Pastikan pesertaProfile sudah ada
+        if (! Auth::user()->pesertaProfile) {
+            return redirect()->route('profile.create')
+                             ->with('error', 'Lengkapi profil Anda terlebih dahulu sebelum mengunggah CU.');
+        }
+
         $data = $request->validate([
             'kategori_cu_id' => 'required|exists:kategori_cu,id',
             'file'           => 'required|file|mimes:pdf,zip|max:10240', // 10MB
@@ -56,15 +62,16 @@ class BerkasController extends Controller
         // Simpan file di storage/app/public/cu_submissions
         $path = $request->file('file')->store('cu_submissions', 'public');
 
+        // Simpan submission CU
         CuSubmission::create([
             'peserta_id'     => Auth::id(),
             'kategori_cu_id' => $data['kategori_cu_id'],
             'file_path'      => $path,
-            'status'         => 'pending',
+            'status'         => CuSubmission::STATUS_PENDING,
             'skor'           => $defaultSkor,
         ]);
 
-        return redirect()->route('berkas.index')
+        return redirect()->route('user.berkas.index')
                          ->with('success', "Berkas berhasil diunggah (skor default: {$defaultSkor}) dan menunggu review.");
     }
 
@@ -73,35 +80,37 @@ class BerkasController extends Controller
      */
     public function show(CuSubmission $berkas)
     {
-    // Cek apakah user yang login adalah pemilik berkas
-    if (auth()->user()->peserta && auth()->user()->peserta->id !== $berkas->peserta_id) {
-        abort(403, 'Anda tidak diizinkan mengakses berkas ini.');
-    }
+        // Cek apakah pemilik berkas
+        if (Auth::id() !== $berkas->peserta_id) {
+            abort(403, 'Anda tidak diizinkan mengakses berkas ini.');
+        }
 
-    // Cek apakah file benar-benar ada
-    if (!Storage::disk('public')->exists($berkas->file_path)) {
-        abort(404, 'File tidak ditemukan.');
-    }
+        // Cek apakah file ada
+        if (! Storage::disk('public')->exists($berkas->file_path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
 
-    // Unduh file
-    return Storage::disk('public')->download($berkas->file_path);
+        return Storage::disk('public')->download($berkas->file_path);
     }
-
 
     /**
-     * Hapus berkas CU jika masih pending.
+     * Hapus berkas CU jika masih pending dan milik peserta.
      */
     public function destroy(CuSubmission $berkas)
-{
-    // Hapus file jika ada
-    if ($berkas->file_path && Storage::disk('public')->exists($berkas->file_path)) {
-        Storage::disk('public')->delete($berkas->file_path);
+    {
+        // Cek hak akses dan status pending
+        if (Auth::id() !== $berkas->peserta_id || $berkas->status !== CuSubmission::STATUS_PENDING) {
+            abort(403, 'Anda tidak bisa menghapus berkas ini.');
+        }
+
+        // Hapus file jika ada
+        if ($berkas->file_path && Storage::disk('public')->exists($berkas->file_path)) {
+            Storage::disk('public')->delete($berkas->file_path);
+        }
+
+        // Hapus record
+        $berkas->delete();
+
+        return back()->with('success', 'Berkas berhasil dihapus.');
     }
-
-    // Hapus record
-    $berkas->delete();
-
-    return back()->with('success', 'Berkas berhasil dihapus.');
-}
-
 }
