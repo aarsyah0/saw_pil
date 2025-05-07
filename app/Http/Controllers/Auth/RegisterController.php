@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\PesertaProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -25,12 +24,12 @@ class RegisterController extends Controller
     {
         $request->validate([
             'name'               => 'required|string|max:100',
-            'email'              => 'required|string|email|max:100|unique:users',
+            'email'              => 'required|string|email|max:100|unique:users,email',
             'password'           => 'required|string|min:8|confirmed',
             'nik'                => 'required|string|max:20',
             'tempat_lahir'       => 'required|string|max:50',
             'tanggal_lahir'      => 'required|date',
-            'nim'                => 'required|string|max:20|unique:peserta_profile',
+            'nim'                => 'required|string|max:20|unique:peserta_profile,nim',
             'no_hp'              => 'required|string|max:20',
             'program_pendidikan' => 'required|in:Diploma,Sarjana',
             'program_studi'      => 'required|string|max:100',
@@ -46,7 +45,7 @@ class RegisterController extends Controller
             'surat_pengantar'    => 'required|file|mimes:pdf,doc,docx|max:5120',
         ]);
 
-        // Simpan file
+        // Simpan file lebih dulu
         $fotoPath  = $request->file('pas_foto')->store('peserta/foto', 'public');
         $suratPath = $request->file('surat_pengantar')->store('peserta/surat', 'public');
 
@@ -60,9 +59,8 @@ class RegisterController extends Controller
                 'role'     => 'peserta',
             ]);
 
-            // 2. Buat PesertaProfile
-            PesertaProfile::create([
-                'user_id'            => $user->id,
+            // 2. Buat PesertaProfile VIA relasi, user_id otomatis terisi
+            $user->pesertaProfile()->create([
                 'nik'                => $request->nik,
                 'tempat_lahir'       => $request->tempat_lahir,
                 'tanggal_lahir'      => $request->tanggal_lahir,
@@ -85,8 +83,9 @@ class RegisterController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()
-                         ->withErrors(['error' => 'Pendaftaran gagal: ' . $e->getMessage()]);
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Pendaftaran gagal: ' . $e->getMessage()]);
         }
 
         return redirect()->route('login')
