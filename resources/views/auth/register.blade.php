@@ -160,11 +160,11 @@
                                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400">
                                         <option value="" disabled>Pilih Program</option>
                                         <option value="Diploma"
-                                            {{ old('program_pendidikan') == 'Diploma' ? 'selected' : '' }}>
-                                            Diploma</option>
+                                            {{ old('program_pendidikan') == 'Diploma3' ? 'selected' : '' }}>
+                                            Diploma 3</option>
                                         <option value="Sarjana"
-                                            {{ old('program_pendidikan') == 'Sarjana' ? 'selected' : '' }}>
-                                            Sarjana</option>
+                                            {{ old('program_pendidikan') == 'Diploma4' ? 'selected' : '' }}>
+                                            Diploma 4</option>
                                     </select>
                                 </div>
                                 <div>
