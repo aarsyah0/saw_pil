@@ -71,7 +71,7 @@ class BerkasController extends Controller
             'skor'           => $defaultSkor,
         ]);
 
-        return redirect()->route('user.berkas.index')
+        return redirect()->route('berkas.index')
                          ->with('success', "Berkas berhasil diunggah (skor default: {$defaultSkor}) dan menunggu review.");
     }
 
