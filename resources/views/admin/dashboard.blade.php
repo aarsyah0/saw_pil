@@ -61,7 +61,6 @@
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">File</th>
                         <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
@@ -83,10 +82,6 @@
                                     class="px-2 py-1 rounded-full text-xs font-semibold {{ $colors[$sub->status] ?? 'bg-gray-100 text-gray-800' }}">
                                     {{ ucfirst($sub->status) }}
                                 </span>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-center">
-                                <a href="{{ route('admin.submissions.show', $sub->id) }}"
-                                    class="inline-block px-3 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition">Detail</a>
                             </td>
                         </tr>
                     @endforeach
