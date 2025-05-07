@@ -64,72 +64,73 @@ class CuVerificationController extends Controller
     }
 
     public function approve(CuSubmission $submission)
-    {
-        DB::transaction(function () use ($submission) {
-            // 1) tandai approved
-            $submission->update([
-                'status'      => CuSubmission::STATUS_APPROVED,
-                'reviewed_at' => now(),
-            ]);
+{
+    DB::transaction(function () use ($submission) {
+        // 1️⃣ Tandai submission ini sebagai approved
+        $submission->update([
+            'status'      => CuSubmission::STATUS_APPROVED,
+            'reviewed_at' => now(),
+        ]);
 
-            // 2) kumpulkan semua approved untuk peserta ini
-            $approved = CuSubmission::with('kategori')
-                ->where('peserta_id', $submission->peserta_id)
-                ->where('status', CuSubmission::STATUS_APPROVED)
-                ->get();
+        // 2️⃣ Kumpulkan semua CU yang sudah approved untuk peserta ini
+        $approved = CuSubmission::with('kategori')
+            ->where('peserta_id', $submission->peserta_id)
+            ->where('status', CuSubmission::STATUS_APPROVED)
+            ->get();
 
-            // 3) ambil top 4 per bidang, lalu top 10 overall
-            $byBidang = $approved->groupBy(fn($i) => $i->kategori->bidang_id);
-            $selected = collect();
-            foreach ($byBidang as $grp) {
-                $selected = $selected->merge($grp->sortByDesc('skor')->take(4));
-            }
-            $final = $selected->sortByDesc('skor')->take(10);
+        // 3️⃣ Ambil top 4 per bidang, lalu dari hasilnya ambil top 10 overall
+        $byBidang = $approved->groupBy(fn($item) => $item->kategori->bidang_id);
+        $selected = collect();
+        foreach ($byBidang as $group) {
+            $selected = $selected->merge($group->sortByDesc('skor')->take(4));
+        }
+        $final = $selected->sortByDesc('skor')->take(10);
 
-            // 4) hitung normalisasi CU (pastikan denominator sesuai numerator)
-            $sumSkor = $final->sum('skor');
-            $maxByField = KategoriCu::groupBy('bidang_id')
-                ->select('bidang_id', DB::raw('MAX(skor) as max_skor'))
-                ->pluck('max_skor', 'bidang_id');
+        // 4️⃣ Hitung total skor mentah dari CU yang terpilih
+        $sumSkor = $final->sum('skor');
 
-            // Kelompokkan final per bidang untuk hitung jumlah item per bidang
-            $finalByBidang = $final->groupBy(fn($i) => $i->kategori->bidang_id);
-            $maxPossible = 0;
-            foreach ($finalByBidang as $bidang => $items) {
-                $count = $items->count();
-                $maxPossible += ($maxByField[$bidang] ?? 0) * $count;
-            }
+        // 5️⃣ Cari nilai tertinggi dari semua peserta (untuk normalisasi global)
+        $maxTotalSkor = CuSubmission::where('status', CuSubmission::STATUS_APPROVED)
+            ->groupBy('peserta_id')
+            ->selectRaw('SUM(skor) as total')
+            ->orderByDesc('total')
+            ->value('total') ?: 1;
 
-            $normCu = $maxPossible > 0 ? round($sumSkor / $maxPossible, 4) : 0.0000;
+        // 6️⃣ Hitung skor CU yang sudah dinormalisasi (maksimal = 1)
+        $normCu = round($sumSkor / $maxTotalSkor, 4);
 
-            // 5) simpan ke penilaian_akhir (set PI & BI = 0 untuk sekarang)
-            $bobot = BobotKriteria::pluck('bobot', 'nama_kriteria');
-            $bCu = $bobot['CU'] ?? 0;
-            PenilaianAkhir::updateOrCreate(
-                ['peserta_id' => $submission->peserta_id],
-                [
-                    'skor_cu_normal' => $normCu,
-                    'skor_pi_normal' => 0.0000,
-                    'skor_bi_normal' => 0.0000,
-                    'total_akhir'    => round($normCu * $bCu, 4),
-                ]
-            );
+        // 7️⃣ Ambil bobot kriteria untuk CU
+        $bobot = BobotKriteria::pluck('bobot', 'nama_kriteria');
+        $bCu = $bobot['CU'] ?? 0;
 
-            // 6) buat record cu_selection
-            CuSelection::create([
-                'submission_id'   => $submission->id,
-                'peserta_id'      => $submission->peserta_id,
-                'level_id'        => $submission->kategori->level_id,
-                'selection_round' => 1,
-                'status_lolos'    => 'pending',
-                'skor_cu'         => $normCu,
-                'selected_at'     => now(),
-            ]);
-        });
+        // 8️⃣ Simpan/Update ke penilaian_akhir (PI & BI = 0 dulu)
+        PenilaianAkhir::updateOrCreate(
+            ['peserta_id' => $submission->peserta_id],
+            [
+                'skor_cu_normal' => $normCu,
+                'skor_pi_normal' => 0.0000,
+                'skor_bi_normal' => 0.0000,
+                'total_akhir'    => round($normCu * $bCu, 4),
+            ]
+        );
 
-        return redirect()->route('admin.verification.index')
-                         ->with('success', 'Submission CU berhasil disetujui.');
-    }
+        // 9️⃣ Buat record di cu_selection (pakai skor normalisasi)
+        CuSelection::create([
+            'submission_id'   => $submission->id,
+            'peserta_id'      => $submission->peserta_id,
+            'level_id'        => $submission->kategori->level_id,
+            'selection_round' => 1,
+            'status_lolos'    => 'pending',
+            'skor_cu'         => $normCu,
+            'selected_at'     => now(),
+        ]);
+    });
+
+    return redirect()->route('admin.verification.index')
+                     ->with('success', 'Submission CU berhasil disetujui.');
+}
+
+
 
     public function reject(Request $request, CuSubmission $submission)
 {

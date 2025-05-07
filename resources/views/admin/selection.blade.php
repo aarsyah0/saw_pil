@@ -16,8 +16,6 @@
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="w-2/12 px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
-                        <th class="w-2/12 px-6 py-3 text-center text-sm font-semibold text-gray-700">Total Skor</th>
-                        <th class="w-2/12 px-6 py-3 text-center text-sm font-semibold text-gray-700">Rata-rata</th>
                         <th class="w-2/12 px-6 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
                         <th class="w-2/12 px-6 py-3 text-center text-sm font-semibold text-gray-700">Waktu</th>
                         <th class="w-2/12 px-6 py-3 text-center text-sm font-semibold text-gray-700">Aksi</th>
@@ -27,10 +25,6 @@
                     @foreach ($selections as $sel)
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 text-sm text-gray-800 text-left">{{ $sel->peserta->user->name }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-800 text-center">
-                                {{ number_format($sel->total_skor_cu, 2) }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-800 text-center">{{ number_format($sel->avg_skor_cu, 4) }}
-                            </td>
                             <td class="px-6 py-4 text-sm text-gray-800 text-center">
                                 <span
                                     class="inline-block px-3 py-1 text-xs font-medium rounded-full
@@ -61,9 +55,11 @@
                                         @csrf @method('PATCH')
                                         <select name="status_lolos"
                                             class="block border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                            <option value="lolos" {{ $sel->status_lolos == 'lolos' ? 'selected' : '' }}>Lolos
+                                            <option value="lolos" {{ $sel->status_lolos == 'lolos' ? 'selected' : '' }}>
+                                                Lolos
                                             </option>
-                                            <option value="gagal" {{ $sel->status_lolos == 'gagal' ? 'selected' : '' }}>Gagal
+                                            <option value="gagal" {{ $sel->status_lolos == 'gagal' ? 'selected' : '' }}>
+                                                Gagal
                                             </option>
                                         </select>
                                         <button type="submit"
