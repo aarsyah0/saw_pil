@@ -267,8 +267,13 @@ Route::middleware('auth')
 
 Route::middleware('auth')->group(function () {
     Route::resource('berkas', BerkasController::class)
-         ->only(['index','create','store','show','destroy']);
+         ->only(['index','create','store','show']);
+
+    Route::delete('/berkas/{berkas}', [BerkasController::class, 'destroy'])
+         ->name('berkas.destroy');
 });
+
+
 Route::middleware('auth')
      ->prefix('user')
      ->name('user.profile.')
