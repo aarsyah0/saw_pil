@@ -25,7 +25,7 @@ class BerkasController extends Controller
         $submissions = CuSubmission::where('peserta_id', Auth::id())
                                    ->orderBy('submitted_at', 'desc')
                                    ->get();
-        $kategoris = KategoriCu::all();
+        $kategoris = KategoriCu::with('level','bidang')->get();
 
         return view('user.berkas', compact('submissions', 'kategoris'));
     }

@@ -132,7 +132,10 @@
                             @foreach ($kategoris as $k)
                                 <option value="{{ $k->id }}"
                                     {{ old('kategori_cu_id') == $k->id ? 'selected' : '' }}>
-                                    {{ $k->wujud_cu }} (Lv {{ $k->level_id }}) – Skor {{ number_format($k->skor, 2) }}
+                                    {{ optional($k->bidang)->nama }} –
+                                    {{ $k->wujud_cu }}
+                                    ({{ optional($k->level)->description }})
+                                    – Skor {{ number_format($k->skor, 2) }}
                                 </option>
                             @endforeach
                         </select>
