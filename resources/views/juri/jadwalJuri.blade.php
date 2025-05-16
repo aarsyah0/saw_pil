@@ -15,9 +15,10 @@
                 <table class="min-w-full bg-white shadow rounded-lg">
                     <thead>
                         <tr>
-                            <th class="px-6 py-3 border-b text-left text-sm font-medium text-gray-700">#</th>
+                            <th class="px-6 py-3 border-b text-left text-sm font-medium text-gray-700">No</th>
                             <th class="px-6 py-3 border-b text-left text-sm font-medium text-gray-700">Nama Peserta</th>
                             <th class="px-6 py-3 border-b text-left text-sm font-medium text-gray-700">Tanggal</th>
+                            <th class="px-6 py-3 border-b text-left text-sm font-medium text-gray-700">Waktu</th>
                             <th class="px-6 py-3 border-b text-left text-sm font-medium text-gray-700">Lokasi</th>
                         </tr>
                     </thead>
@@ -28,6 +29,9 @@
                                 <td class="px-6 py-4 border-b text-sm">{{ $schedule->peserta_name }}</td>
                                 <td class="px-6 py-4 border-b text-sm">
                                     {{ \Carbon\Carbon::parse($schedule->tanggal)->translatedFormat('d F Y') }}
+                                </td>
+                                <td class="px-6 py-4 border-b text-sm">
+                                    {{ \Carbon\Carbon::parse($schedule->tanggal)->translatedFormat('H:i') }}
                                 </td>
                                 <td class="px-6 py-4 border-b text-sm">{{ $schedule->lokasi }}</td>
                             </tr>

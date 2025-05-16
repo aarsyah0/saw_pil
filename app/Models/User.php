@@ -88,4 +88,9 @@ public function juriProfile()
 
         return null;
     }
+
+public function penilaianAkhir()
+    {
+        return $this->hasOne(PenilaianAkhir::class, 'peserta_id', 'id');
+    }
 }

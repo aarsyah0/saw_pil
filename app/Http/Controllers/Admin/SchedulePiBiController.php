@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SchedulePiBi;
 use App\Models\User;
 use Illuminate\Http\Request;
+    use Carbon\Carbon;
 
 class SchedulePiBiController extends Controller
 {
@@ -41,56 +42,67 @@ class SchedulePiBiController extends Controller
     /**
      * Store a new schedule and its juries.
      */
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'peserta_id' => 'required|exists:users,id',
-            'juri_id'    => 'required|array|min:1',
-            'juri_id.*'  => 'exists:users,id',
-            'tanggal'    => 'required|date',
-            'lokasi'     => 'required|string|max:150',
-        ]);
 
-        if (SchedulePiBi::where('peserta_id', $data['peserta_id'])->exists()) {
-            return back()->withErrors(['peserta_id' => 'Peserta sudah memiliki jadwal.'])->withInput();
-        }
 
-        $schedule = SchedulePiBi::create([
-            'peserta_id' => $data['peserta_id'],
-            'tanggal'    => $data['tanggal'],
-            'lokasi'     => $data['lokasi'],
-            'juri_id'    => $data['juri_id'][0],
-        ]);
+public function store(Request $request)
+{
+    $data = $request->validate([
+        'peserta_id' => 'required|exists:users,id',
+        'juri_id'    => 'required|array|min:1',
+        'juri_id.*'  => 'exists:users,id',
+        // validasi untuk datetime-local: format "2025-05-14T13:45"
+        'tanggal'    => 'required|date_format:Y-m-d\TH:i',
+        'lokasi'     => 'required|string|max:150',
+    ]);
 
-        $schedule->juris()->sync($data['juri_id']);
+    // parse ke format DB
+    $dt = Carbon::createFromFormat('Y-m-d\TH:i', $data['tanggal'])
+                ->toDateTimeString(); // "YYYY-MM-DD HH:MM:SS"
 
-        return redirect()->route('admin.schedules.index')->with('success', 'Jadwal dan juri berhasil disimpan.');
+    if (SchedulePiBi::where('peserta_id', $data['peserta_id'])->exists()) {
+        return back()->withErrors(['peserta_id' => 'Peserta sudah memiliki jadwal.'])->withInput();
     }
+
+    $schedule = SchedulePiBi::create([
+        'peserta_id' => $data['peserta_id'],
+        'tanggal'    => $dt,
+        'lokasi'     => $data['lokasi'],
+        'juri_id'    => $data['juri_id'][0],
+    ]);
+
+    $schedule->juris()->sync($data['juri_id']);
+
+    return redirect()->route('admin.schedules.index')->with('success', 'Jadwal dan juri berhasil disimpan.');
+}
+
+public function update(Request $request, $id)
+{
+    $data = $request->validate([
+        'juri_id'   => 'required|array|min:1',
+        'juri_id.*' => 'exists:users,id',
+        'tanggal'   => 'required|date_format:Y-m-d\TH:i',
+        'lokasi'    => 'required|string|max:150',
+    ]);
+
+    $dt = Carbon::createFromFormat('Y-m-d\TH:i', $data['tanggal'])
+                ->toDateTimeString();
+
+    $schedule = SchedulePiBi::findOrFail($id);
+    $schedule->update([
+        'tanggal' => $dt,
+        'lokasi'  => $data['lokasi'],
+        'juri_id' => $data['juri_id'][0],
+    ]);
+
+    $schedule->juris()->syncWithoutDetaching($data['juri_id']);
+
+    return redirect()->route('admin.schedules.index')->with('success', 'Jadwal dan juri berhasil diperbarui.');
+}
+
 
     /**
      * Update an existing schedule by adding new juries (multi-juri) without removing existing ones.
      */
-    public function update(Request $request, $id)
-    {
-        $data = $request->validate([
-            'juri_id'   => 'required|array|min:1',
-            'juri_id.*' => 'exists:users,id',
-            'tanggal'   => 'required|date',
-            'lokasi'    => 'required|string|max:150',
-        ]);
-
-        $schedule = SchedulePiBi::findOrFail($id);
-        $schedule->update([
-            'tanggal' => $data['tanggal'],
-            'lokasi'  => $data['lokasi'],
-            'juri_id' => $data['juri_id'][0],
-        ]);
-
-        // Add selected juries without removing existing ones
-        $schedule->juris()->syncWithoutDetaching($data['juri_id']);
-
-        return redirect()->route('admin.schedules.index')->with('success', 'Jadwal dan juri berhasil diperbarui.');
-    }
 
     /**
      * Delete a schedule and detach juries.

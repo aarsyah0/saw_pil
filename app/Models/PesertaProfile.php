@@ -31,6 +31,7 @@ class PesertaProfile extends Model
         'email_pt',
         'pas_foto',
         'surat_pengantar',
+        'jurusan',
     ];
 
     protected $casts = [

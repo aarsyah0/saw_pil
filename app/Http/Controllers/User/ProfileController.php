@@ -82,13 +82,10 @@ class ProfileController extends Controller
             'tempat_lahir'       => 'required|string|max:50',
             'tanggal_lahir'      => 'required|date',
             'program_pendidikan' => 'required|in:Diploma,Sarjana',
+            'jurusan'            => 'required|string|max:100',
             'program_studi'      => 'required|string|max:100',
             'semester_ke'        => 'required|integer|min:1',
             'ipk'                => 'required|numeric|between:0,4',
-            'telp_pt'            => 'required|string|max:20',
-            'email_pt'           => 'required|email|max:100',
-            'perguruan_tinggi'   => 'required|string|max:150',
-            'alamat_pt'          => 'required|string',
         ];
         $data = $request->validate($rules);
 

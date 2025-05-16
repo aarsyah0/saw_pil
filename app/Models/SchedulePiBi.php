@@ -11,11 +11,19 @@ class SchedulePiBi extends Model
 {
     protected $table = 'schedule_pi_bi';
     public $timestamps = false;
+
     protected $fillable = [
-        'peserta_id', 'juri_id', 'tanggal', 'lokasi'
+        'peserta_id',
+        'juri_id',
+        'tanggal',
+        'lokasi',
     ];
+
+    /**
+     * Agar kolom `tanggal` di‑cast sebagai Carbon datetime (termasuk jam:menit)
+     */
     protected $casts = [
-        'tanggal' => 'date',
+        'tanggal' => 'datetime:Y-m-d H:i:s',
     ];
 
     /**
@@ -25,21 +33,21 @@ class SchedulePiBi extends Model
     {
         return $this->belongsToMany(
             User::class,
-            'schedule_pi_bi_juri',
-            'schedule_id',
-            'juri_id'
+            'schedule_pi_bi_juri', // nama pivot table
+            'schedule_id',         // FK di pivot menuju schedule
+            'juri_id'              // FK di pivot menuju user (juri)
         )->withTimestamps();
     }
 
     /**
-     * Relasi ke model User sebagai peserta
+     * Relasi one-to-many inverse ke model User sebagai peserta
      */
     public function peserta(): BelongsTo
     {
         return $this->belongsTo(
             User::class,
-            'peserta_id',   // foreign key on this table
-            'id'            // owner key on User
+            'peserta_id',   // FK di table schedule_pi_bi
+            'id'            // PK di table users
         );
     }
 }

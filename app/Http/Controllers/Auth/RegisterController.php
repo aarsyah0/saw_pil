@@ -35,14 +35,9 @@ class RegisterController extends Controller
             'program_studi'      => 'required|string|max:100',
             'semester_ke'        => 'required|integer|min:1',
             'ipk'                => 'required|numeric|min:0|max:4',
-            'kode_pt'            => 'required|string|max:10',
-            'wilayah_lldikti'    => 'required|string|max:50',
-            'perguruan_tinggi'   => 'required|string|max:150',
-            'alamat_pt'          => 'required|string',
-            'telp_pt'            => 'required|string|max:20',
-            'email_pt'           => 'required|string|email|max:100',
             'pas_foto'           => 'required|image|max:2048',
             'surat_pengantar'    => 'required|file|mimes:pdf,doc,docx|max:5120',
+            'jurusan'      => 'required|string|max:100',
         ]);
 
         // Simpan file lebih dulu
@@ -70,14 +65,9 @@ class RegisterController extends Controller
                 'program_studi'      => $request->program_studi,
                 'semester_ke'        => $request->semester_ke,
                 'ipk'                => $request->ipk,
-                'kode_pt'            => $request->kode_pt,
-                'wilayah_lldikti'    => $request->wilayah_lldikti,
-                'perguruan_tinggi'   => $request->perguruan_tinggi,
-                'alamat_pt'          => $request->alamat_pt,
-                'telp_pt'            => $request->telp_pt,
-                'email_pt'           => $request->email_pt,
                 'pas_foto'           => $fotoPath,
                 'surat_pengantar'    => $suratPath,
+                'jurusan'            => $request->jurusan,
             ]);
 
             DB::commit();

@@ -1,9 +1,7 @@
 @extends('admin.layouts.master')
 
 @section('content')
-    <!-- Content wrapper fills full width provided by layout -->
     <div class="w-full px-8 py-8">
-
         @if (session('success'))
             <div class="mb-6 bg-green-50 border border-green-400 text-green-800 px-6 py-4 rounded-lg shadow">
                 {{ session('success') }}
@@ -24,7 +22,7 @@
                         <th class="px-6 py-3 text-left">#</th>
                         <th class="px-6 py-3 text-left">Peserta</th>
                         <th class="px-6 py-3 text-left">Juri</th>
-                        <th class="px-6 py-3 text-center">Tanggal</th>
+                        <th class="px-6 py-3 text-center">Tanggal & Waktu</th>
                         <th class="px-6 py-3">Lokasi</th>
                         <th class="px-6 py-3 text-center">Aksi</th>
                     </tr>
@@ -33,22 +31,28 @@
                     @foreach ($schedules as $i => $s)
                         <tr class="hover:bg-gray-50" data-id="{{ $s->id }}" data-peserta="{{ $s->peserta->id }}"
                             data-juries="{{ $s->juris->pluck('id')->join(',') }}"
-                            data-tanggal="{{ $s->tanggal->format('Y-m-d') }}" data-lokasi="{{ $s->lokasi }}">
+                            data-tanggal="{{ $s->tanggal->format('Y-m-d\\TH:i') }}" data-lokasi="{{ $s->lokasi }}">
                             <td class="px-6 py-4">{{ $schedules->firstItem() + $i }}</td>
                             <td class="px-6 py-4">{{ $s->peserta->name }}</td>
                             <td class="px-6 py-4">{{ $s->juris->pluck('name')->join(', ') }}</td>
-                            <td class="px-6 py-4 text-center">{{ $s->tanggal->format('Y-m-d') }}</td>
+                            <td class="px-6 py-4 text-center">{{ $s->tanggal->format('d-m-Y H:i') }}</td>
                             <td class="px-6 py-4">{{ $s->lokasi }}</td>
                             <td class="px-6 py-4 text-center space-x-2">
                                 <button
-                                    class="btnDetail px-2 py-1 border border-green-600 text-green-600 rounded hover:bg-green-50">Detail</button>
+                                    class="btnDetail px-2 py-1 border border-green-600 text-green-600 rounded hover:bg-green-50">
+                                    Detail
+                                </button>
                                 <button
-                                    class="btnEdit px-2 py-1 border border-indigo-600 text-indigo-600 rounded hover:bg-indigo-50">Edit</button>
+                                    class="btnEdit px-2 py-1 border border-indigo-600 text-indigo-600 rounded hover:bg-indigo-50">
+                                    Edit
+                                </button>
                                 <form action="{{ route('admin.schedules.destroy', $s->id) }}" method="POST" class="inline"
                                     onsubmit="return confirm('Yakin ingin menghapus jadwal?')">
                                     @csrf @method('DELETE')
                                     <button type="submit"
-                                        class="px-2 py-1 border border-red-600 text-red-600 rounded hover:bg-red-50">Hapus</button>
+                                        class="px-2 py-1 border border-red-600 text-red-600 rounded hover:bg-red-50">
+                                        Hapus
+                                    </button>
                                 </form>
                             </td>
                         </tr>
@@ -90,13 +94,14 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block mb-1">Tanggal</label>
-                    <input id="tanggal" type="date" name="tanggal" class="w-full border rounded px-3 py-2">
+                    <label class="block mb-1">Tanggal & Waktu</label>
+                    <input id="tanggal" type="datetime-local" name="tanggal" class="w-full border rounded px-3 py-2"
+                        required>
                 </div>
 
                 <div class="mb-6">
                     <label class="block mb-1">Lokasi</label>
-                    <input id="lokasi" type="text" name="lokasi" class="w-full border rounded px-3 py-2">
+                    <input id="lokasi" type="text" name="lokasi" class="w-full border rounded px-3 py-2" required>
                 </div>
 
                 <div class="text-right">
@@ -108,74 +113,79 @@
             </form>
         </div>
     </div>
-
-    @push('scripts')
-        <script>
-            const modal = document.getElementById('modal');
-            const form = document.getElementById('modalForm');
-            const methodInput = document.getElementById('_method');
-            const titleEl = document.getElementById('modalTitle');
-            const submitBtn = document.getElementById('btnSubmit');
-
-            // Open modal for create
-            document.getElementById('btnOpenModal').addEventListener('click', () => openModal('create'));
-
-            // Delegate edit/detail buttons
-            document.querySelector('tbody').addEventListener('click', e => {
-                const tr = e.target.closest('tr');
-                if (!tr) return;
-                const data = {
-                    id: tr.dataset.id,
-                    peserta_id: tr.dataset.peserta,
-                    juri_ids: tr.dataset.juries.split(','),
-                    tanggal: tr.dataset.tanggal,
-                    lokasi: tr.dataset.lokasi
-                };
-                if (e.target.classList.contains('btnEdit')) openModal('edit', data);
-                if (e.target.classList.contains('btnDetail')) openModal('detail', data);
-            });
-
-            function openModal(mode, data = {}) {
-                modal.classList.replace('hidden', 'flex');
-                form.reset();
-                ['peserta_id', 'tanggal', 'lokasi'].forEach(id => document.getElementById(id).disabled = false);
-                Array.from(document.getElementById('juri_id').options).forEach(opt => opt.disabled = false);
-
-                if (mode === 'create') {
-                    titleEl.textContent = 'Buat Jadwal Baru';
-                    form.action = `{{ route('admin.schedules.store') }}`;
-                    methodInput.value = 'POST';
-                    submitBtn.style.display = '';
-                }
-                if (mode === 'edit') {
-                    titleEl.textContent = 'Edit Jadwal';
-                    form.action = `/admin/schedules/${data.id}`;
-                    methodInput.value = 'PUT';
-                    document.getElementById('peserta_id').value = data.peserta_id;
-                    document.getElementById('tanggal').value = data.tanggal;
-                    document.getElementById('lokasi').value = data.lokasi;
-                    Array.from(document.getElementById('juri_id').options).forEach(opt => opt.selected = data.juri_ids.includes(
-                        opt.value));
-                    submitBtn.style.display = '';
-                }
-                if (mode === 'detail') {
-                    titleEl.textContent = 'Detail Jadwal';
-                    submitBtn.style.display = 'none';
-                    ['peserta_id', 'tanggal', 'lokasi'].forEach(id => {
-                        const el = document.getElementById(id);
-                        el.value = data[id];
-                        el.disabled = true;
-                    });
-                    Array.from(document.getElementById('juri_id').options).forEach(opt => {
-                        opt.selected = data.juri_ids.includes(opt.value);
-                        opt.disabled = true;
-                    });
-                }
-            }
-
-            function closeModal() {
-                modal.classList.replace('flex', 'hidden');
-            }
-        </script>
-    @endpush
 @endsection
+
+@push('scripts')
+    <script>
+        const modal = document.getElementById('modal');
+        const form = document.getElementById('modalForm');
+        const methodInput = document.getElementById('_method');
+        const titleEl = document.getElementById('modalTitle');
+        const submitBtn = document.getElementById('btnSubmit');
+
+        // Open modal for create
+        document.getElementById('btnOpenModal').addEventListener('click', () => openModal('create'));
+
+        // Delegate edit/detail buttons
+        document.querySelector('tbody').addEventListener('click', e => {
+            const tr = e.target.closest('tr');
+            if (!tr) return;
+
+            const data = {
+                id: tr.dataset.id,
+                peserta_id: tr.dataset.peserta,
+                juri_ids: tr.dataset.juries.split(','),
+                tanggal: tr.dataset.tanggal,
+                lokasi: tr.dataset.lokasi
+            };
+
+            if (e.target.classList.contains('btnEdit')) openModal('edit', data);
+            if (e.target.classList.contains('btnDetail')) openModal('detail', data);
+        });
+
+        function openModal(mode, data = {}) {
+            modal.classList.replace('hidden', 'flex');
+            form.reset();
+            // enable all fields
+            ['peserta_id', 'tanggal', 'lokasi'].forEach(id => document.getElementById(id).disabled = false);
+            Array.from(document.getElementById('juri_id').options).forEach(opt => opt.disabled = false);
+
+            if (mode === 'create') {
+                titleEl.textContent = 'Buat Jadwal Baru';
+                form.action = `{{ route('admin.schedules.store') }}`;
+                methodInput.value = 'POST';
+                submitBtn.style.display = '';
+            }
+
+            if (mode === 'edit') {
+                titleEl.textContent = 'Edit Jadwal';
+                form.action = `/admin/schedules/${data.id}`;
+                methodInput.value = 'PUT';
+                document.getElementById('peserta_id').value = data.peserta_id;
+                document.getElementById('tanggal').value = data.tanggal;
+                document.getElementById('lokasi').value = data.lokasi;
+                Array.from(document.getElementById('juri_id').options)
+                    .forEach(opt => opt.selected = data.juri_ids.includes(opt.value));
+                submitBtn.style.display = '';
+            }
+
+            if (mode === 'detail') {
+                titleEl.textContent = 'Detail Jadwal';
+                submitBtn.style.display = 'none';
+                ['peserta_id', 'tanggal', 'lokasi'].forEach(id => {
+                    const el = document.getElementById(id);
+                    el.value = data[id];
+                    el.disabled = true;
+                });
+                Array.from(document.getElementById('juri_id').options).forEach(opt => {
+                    opt.selected = data.juri_ids.includes(opt.value);
+                    opt.disabled = true;
+                });
+            }
+        }
+
+        function closeModal() {
+            modal.classList.replace('flex', 'hidden');
+        }
+    </script>
+@endpush

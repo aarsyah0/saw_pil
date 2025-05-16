@@ -168,6 +168,12 @@
                                     </select>
                                 </div>
                                 <div>
+                                    <label for="jurusan" class="block text-gray-700 mb-1">Jurusan</label>
+                                    <input id="jurusan" name="jurusan" type="text" required
+                                        value="{{ old('jurusan') }}"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400" />
+                                </div>
+                                <div>
                                     <label for="program_studi" class="block text-gray-700 mb-1">Program Studi</label>
                                     <input id="program_studi" name="program_studi" type="text" required
                                         value="{{ old('program_studi') }}"
@@ -193,65 +199,15 @@
                             </div>
                         </div>
 
-                        <!-- Data Institusi -->
-                        <div class="space-y-4 p-6 bg-gray-50 rounded-xl shadow-inner">
-                            <h3 class="text-2xl font-semibold text-gray-800 flex items-center"><svg
-                                    xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-red-500"
-                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7v10l4-3 4 3V7H8z" />
-                                </svg>Data Institusi</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="perguruan_tinggi" class="block text-gray-700 mb-1">Perguruan
-                                        Tinggi</label>
-                                    <input id="perguruan_tinggi" name="perguruan_tinggi" type="text" required
-                                        value="{{ old('perguruan_tinggi') }}"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400" />
-                                </div>
-                                <div>
-                                    <label for="alamat_pt" class="block text-gray-700 mb-1">Alamat Lengkap</label>
-                                    <textarea id="alamat_pt" name="alamat_pt" rows="2" required
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400">{{ old('alamat_pt') }}</textarea>
-                                </div>
-                                <div>
-                                    <label for="wilayah_lldikti" class="block text-gray-700 mb-1">Wilayah
-                                        LLDIKTI</label>
-                                    <input id="wilayah_lldikti" name="wilayah_lldikti" type="text" required
-                                        value="{{ old('wilayah_lldikti') }}"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400" />
-                                </div>
-                                <div>
-                                    <label for="kode_pt" class="block text-gray-700 mb-1">Kode PT</label>
-                                    <input id="kode_pt" name="kode_pt" type="text" required
-                                        value="{{ old('kode_pt') }}"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400" />
-                                </div>
-                                <div>
-                                    <label for="email_pt" class="block text-gray-700 mb-1">Email PT</label>
-                                    <input id="email_pt" name="email_pt" type="email" required
-                                        value="{{ old('email_pt') }}"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400" />
-                                </div>
-                                <div>
-                                    <label for="telp_pt" class="block text-gray-700 mb-1">Telp PT</label>
-                                    <input id="telp_pt" name="telp_pt" type="text" required
-                                        value="{{ old('telp_pt') }}"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit"
-                    class="w-full py-3 bg-blue-600 text-white rounded-lg font-medium shadow-sm hover:bg-blue-700 transition-all duration-300 flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Daftar Sekarang
-                </button>
+                        <button type="submit"
+                            class="w-full py-3 bg-blue-600 text-white rounded-lg font-medium shadow-sm hover:bg-blue-700 transition-all duration-300 flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Daftar Sekarang
+                        </button>
             </form>
         </div>
     </div>

@@ -202,6 +202,14 @@
                         @enderror
                     </div>
                     <div>
+                        <label for="jurusan" class="block text-sm font-medium text-gray-700">Jurusan</label>
+                        <input type="text" name="jurusan" id="jurusan" class="mt-1 w-full border rounded-lg p-2"
+                            value="{{ old('jurusan', $profile->jurusan) }}">
+                        @error('jurusan')
+                            <p class="text-red-600 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
                         <label for="program_studi" class="block text-sm font-medium text-gray-700">Program Studi</label>
                         <input type="text" name="program_studi" id="program_studi"
                             class="mt-1 w-full border rounded-lg p-2"
@@ -224,60 +232,6 @@
                         <input type="number" step="0.01" max="4" name="ipk" id="ipk"
                             class="mt-1 w-full border rounded-lg p-2" value="{{ old('ipk', $profile->ipk) }}">
                         @error('ipk')
-                            <p class="text-red-600 text-sm">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="kode_pt" class="block text-sm font-medium text-gray-700">Kode PT</label>
-                        <input type="text" name="kode_pt" id="kode_pt" class="mt-1 w-full border rounded-lg p-2"
-                            value="{{ old('kode_pt', $profile->kode_pt) }}">
-                        @error('kode_pt')
-                            <p class="text-red-600 text-sm">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="wilayah_lldikti" class="block text-sm font-medium text-gray-700">Wilayah
-                            LLDIKTI</label>
-                        <input type="text" name="wilayah_lldikti" id="wilayah_lldikti"
-                            class="mt-1 w-full border rounded-lg p-2"
-                            value="{{ old('wilayah_lldikti', $profile->wilayah_lldikti) }}">
-                        @error('wilayah_lldikti')
-                            <p class="text-red-600 text-sm">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="perguruan_tinggi" class="block text-sm font-medium text-gray-700">Perguruan
-                            Tinggi</label>
-                        <input type="text" name="perguruan_tinggi" id="perguruan_tinggi"
-                            class="mt-1 w-full border rounded-lg p-2"
-                            value="{{ old('perguruan_tinggi', $profile->perguruan_tinggi) }}">
-                        @error('perguruan_tinggi')
-                            <p class="text-red-600 text-sm">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="alamat_pt" class="block text-sm font-medium text-gray-700">Alamat Perguruan
-                            Tinggi</label>
-                        <textarea name="alamat_pt" id="alamat_pt" rows="3" class="mt-1 w-full border rounded-lg p-2">{{ old('alamat_pt', $profile->alamat_pt) }}</textarea>
-                        @error('alamat_pt')
-                            <p class="text-red-600 text-sm">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="telp_pt" class="block text-sm font-medium text-gray-700">Telp. Perguruan
-                            Tinggi</label>
-                        <input type="text" name="telp_pt" id="telp_pt" class="mt-1 w-full border rounded-lg p-2"
-                            value="{{ old('telp_pt', $profile->telp_pt) }}">
-                        @error('telp_pt')
-                            <p class="text-red-600 text-sm">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="email_pt" class="block text-sm font-medium text-gray-700">Email Perguruan
-                            Tinggi</label>
-                        <input type="email" name="email_pt" id="email_pt" class="mt-1 w-full border rounded-lg p-2"
-                            value="{{ old('email_pt', $profile->email_pt) }}">
-                        @error('email_pt')
                             <p class="text-red-600 text-sm">{{ $message }}</p>
                         @enderror
                     </div>

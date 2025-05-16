@@ -17,6 +17,7 @@
                         <tr class="text-left">
                             <th class="px-4 py-2">No.</th>
                             <th class="px-4 py-2">Tanggal</th>
+                            <th class="px-4 py-2">waktu</th>
                             <th class="px-4 py-2">Lokasi</th>
                         </tr>
                     </thead>
@@ -24,7 +25,8 @@
                         @foreach ($schedules as $i => $sch)
                             <tr class="@if ($i % 2 == 0) bg-white @else bg-gray-50 @endif">
                                 <td class="px-4 py-2">{{ $i + 1 }}</td>
-                                <td class="px-4 py-2">{{ $sch->tanggal->format('d M Y') }}</td>
+                                <td class="px-4 py-2">{{ $sch->tanggal->format('d-m-Y') }}</td>
+                                <td class="px-4 py-2">{{ $sch->tanggal->format('H:i') }}</td>
                                 <td class="px-4 py-2">{{ $sch->lokasi }}</td>
                             </tr>
                         @endforeach
