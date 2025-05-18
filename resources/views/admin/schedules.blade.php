@@ -123,10 +123,8 @@
         const titleEl = document.getElementById('modalTitle');
         const submitBtn = document.getElementById('btnSubmit');
 
-        // Open modal for create
         document.getElementById('btnOpenModal').addEventListener('click', () => openModal('create'));
 
-        // Delegate edit/detail buttons
         document.querySelector('tbody').addEventListener('click', e => {
             const tr = e.target.closest('tr');
             if (!tr) return;
@@ -134,7 +132,7 @@
             const data = {
                 id: tr.dataset.id,
                 peserta_id: tr.dataset.peserta,
-                juri_ids: tr.dataset.juries.split(','),
+                juri_ids: tr.dataset.juries ? tr.dataset.juries.split(',') : [],
                 tanggal: tr.dataset.tanggal,
                 lokasi: tr.dataset.lokasi
             };
@@ -146,30 +144,35 @@
         function openModal(mode, data = {}) {
             modal.classList.replace('hidden', 'flex');
             form.reset();
-            // enable all fields
-            ['peserta_id', 'tanggal', 'lokasi'].forEach(id => document.getElementById(id).disabled = false);
-            Array.from(document.getElementById('juri_id').options).forEach(opt => opt.disabled = false);
+            ['peserta_id', 'tanggal', 'lokasi'].forEach(id => {
+                const el = document.getElementById(id);
+                el.disabled = false;
+                el.value = '';
+            });
+            Array.from(document.getElementById('juri_id').options).forEach(opt => {
+                opt.disabled = false;
+                opt.selected = false;
+            });
 
             if (mode === 'create') {
                 titleEl.textContent = 'Buat Jadwal Baru';
                 form.action = `{{ route('admin.schedules.store') }}`;
                 methodInput.value = 'POST';
                 submitBtn.style.display = '';
-            }
 
-            if (mode === 'edit') {
+            } else if (mode === 'edit') {
                 titleEl.textContent = 'Edit Jadwal';
                 form.action = `/admin/schedules/${data.id}`;
                 methodInput.value = 'PUT';
                 document.getElementById('peserta_id').value = data.peserta_id;
                 document.getElementById('tanggal').value = data.tanggal;
                 document.getElementById('lokasi').value = data.lokasi;
-                Array.from(document.getElementById('juri_id').options)
-                    .forEach(opt => opt.selected = data.juri_ids.includes(opt.value));
+                Array.from(document.getElementById('juri_id').options).forEach(opt => {
+                    opt.selected = data.juri_ids.includes(opt.value);
+                });
                 submitBtn.style.display = '';
-            }
 
-            if (mode === 'detail') {
+            } else if (mode === 'detail') {
                 titleEl.textContent = 'Detail Jadwal';
                 submitBtn.style.display = 'none';
                 ['peserta_id', 'tanggal', 'lokasi'].forEach(id => {
