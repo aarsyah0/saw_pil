@@ -37,21 +37,18 @@
                             <td class="px-4 py-3 text-center">{{ $s->lokasi }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex gap-2 justify-center">
-                                    <button
-                                        @click="open('pi', {{ $s->id }}, '{{ $s->peserta->name }}', {{ $piDone ? 'true' : 'false' }})"
-                                        class="px-3 py-1 rounded text-white {{ $piDone ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700' }}"
-                                        {{ $piDone ? 'disabled' : '' }}>
+                                    <button @click="open('pi', {{ $s->id }}, '{{ $s->peserta->name }}')"
+                                        class="px-3 py-1 rounded text-white bg-blue-600 hover:bg-blue-700">
                                         Nilai PI
                                     </button>
 
-                                    <button
-                                        @click="open('bi', {{ $s->id }}, '{{ $s->peserta->name }}', {{ $biDone ? 'true' : 'false' }})"
-                                        class="px-3 py-1 rounded text-white {{ $biDone ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700' }}"
-                                        {{ $biDone ? 'disabled' : '' }}>
+                                    <button @click="open('bi', {{ $s->id }}, '{{ $s->peserta->name }}')"
+                                        class="px-3 py-1 rounded text-white bg-green-600 hover:bg-green-700">
                                         Nilai BI
                                     </button>
                                 </div>
                             </td>
+
                         </tr>
                     @endforeach
                 </tbody>
