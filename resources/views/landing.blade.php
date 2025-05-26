@@ -173,7 +173,11 @@
             <div class="col-md-6" data-aos="fade-left" data-aos-duration="600">
                 <h2 class="fw-bold text-primary">PILMAPRES</h2>
                 <p>Pemilihan Mahasiswa Berprestasi (PILMAPRES) adalah ajang bergengsi bagi mahasiswa berprestasi ...</p>
-                <button class="btn btn-outline-dark">Daftar Sekarang!!</button>
+                <button class="btn btn-outline-dark btn-custom btn-filled"
+                    onclick="location.href='{{ route('register') }}'">
+                    Daftar Sekarang!!
+                </button>
+
             </div>
         </div>
     </section>
