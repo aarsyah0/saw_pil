@@ -154,6 +154,7 @@
             /* Section tujuan-pilmapres: buat semua card punya tinggi yang sama */
             .tujuan-pilmapres .card {
                 height: 350px;
+                width: 100%;
                 /* sesuaikan angka dengan kebutuhanmu */
                 display: flex;
                 flex-direction: column;
@@ -263,10 +264,9 @@
             @foreach ($purposes as $p)
                 <div class="col-sm-6 col-md-4">
                     <div class="card h-100 text-center border-0 shadow-sm">
-                        <div class="card-body d-flex flex-column justify-content-center">
+                        <div class="card-body">
                             <img src="{{ asset('images/check-icon.png') }}" alt="Checklist Icon" class="mb-3"
-                                style="width:48px; height:48px; object-fit:contain;" data-aos="flip-left"
-                                data-aos-duration="800">
+                                data-aos="flip-left" data-aos-duration="800">
                             <h5 class="card-title fw-bold">{{ $p->title }}</h5>
                             <p class="card-text text-muted mt-2">{{ $p->description ?? '-' }}</p>
                         </div>
