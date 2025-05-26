@@ -22,8 +22,8 @@
         </tbody>
     </table>
 
-    <h2 class="text-xl font-semibold mb-2">Ringkasan Skor</h2>
+    {{-- <h2 class="text-xl font-semibold mb-2">Ringkasan Skor</h2>
     <p><strong>Total Skor CU:</strong> {{ number_format($totalSkorCU, 4) }}</p>
     <p><strong>Skor Maksimal:</strong> {{ number_format($maxSkorCU, 4) }}</p>
-    <p><strong>Normalisasi:</strong> {{ number_format($norm, 4) }}</p>
+    <p><strong>Normalisasi:</strong> {{ number_format($norm, 4) }}</p> --}}
 </div>
