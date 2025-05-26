@@ -195,6 +195,7 @@
                 color: #007bff;
                 /* Biru saat hover/klik */
             }
+        }
     </style>
 </head>
 
