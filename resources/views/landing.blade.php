@@ -19,6 +19,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
+
     <style>
         /* Apply Google Fonts */
         body {
@@ -33,97 +34,167 @@
             font-family: 'Playfair Display', serif;
         }
 
-        .btn-outline-dark {
-            font-weight: 600;
+        /* ======================================
+   CUSTOM LIST STYLE
+====================================== */
+        .custom-list li {
+            margin-bottom: 0.75rem;
+            font-weight: 500;
         }
 
+        /* ======================================
+   CAROUSEL CAPTION STYLE
+====================================== */
         .carousel-caption h1 {
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
         }
 
-        .custom-list li {
-            margin-bottom: .75rem;
-            font-weight: 500;
-        }
-
-        /* Pastikan ul.navbar-nav relatif agar pseudo-element bisa absolute */
-        .navbar-nav {
-            position: relative;
-        }
-
-        /* Garis custom sebagai pseudo-element */
-        .navbar-nav::after {
-            content: "";
+        /* Overlay gelap di atas gambar */
+        .overlay {
             position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
             bottom: 0;
-            /* di bawah item */
-            left: var(--underline-left, 0);
-            /* di‐set lewat JS */
-            width: var(--underline-width, 0);
-            /* di‐set lewat JS */
-            height: 3px;
-            /* ketebalan */
-            /* warna primary Bootstrap */
-            transition: left .3s ease, width .3s ease;
-            /* animasi sliding */
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            pointer-events: none;
         }
 
-        /* Beri ruang bawah link supaya teks tidak mepet ke garis */
-        .navbar-nav .nav-link {
-            padding-bottom: 0.5rem;
-        }
-
-        /* Hilangkan border/underline bawaan .active (Bootstrap tidak kasih,
-   tapi jika ada override lain, ini menjamin hilang) */
-        .navbar-nav .nav-link.active {
-            border-bottom: none !important;
-            text-decoration: none !important;
-        }
-
-        /* Section tujuan-pilmapres: buat semua card punya tinggi yang sama */
-        .tujuan-pilmapres .card {
-            height: 350px;
-            /* sesuaikan angka dengan kebutuhanmu */
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Kemudian card-body jadi flex agar konten ter-center */
-        .tujuan-pilmapres .card-body {
-            flex: 1;
-            /* ambil sisa tinggi */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            /* vertikal center */
-            align-items: center;
-            /* horizontal center */
-            text-align: center;
-            padding: 1.5rem;
-            /* spacing konsisten */
-        }
-
-        /* Optional: pakai object-fit untuk gambar agar tidak melar */
-        .tujuan-pilmapres .card-body img {
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-        }
-
-        .footer-text a {
+        /* Caption/text yang muncul di tengah gambar */
+        .carousel-caption {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            transform: translateY(-50%);
+            text-align: left;
+            z-index: 10;
             color: white;
-            /* Warna awal putih */
-            text-decoration: none;
-            /* Hilangkan garis bawah */
-            transition: color 0.3s;
-            /* Efek transisi halus */
         }
 
-        .footer-text a:hover,
-        .footer-text a:active {
-            color: #007bff;
-            /* Biru saat hover/klik */
+        /* Judul */
+        .carousel-caption h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
         }
+
+        /* Subjudul */
+        .carousel-caption p.lead {
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Tombol dalam caption */
+        .carousel-caption .btn {
+            position: relative;
+            z-index: 20;
+            padding: 10px 24px;
+            font-size: 1rem;
+            border: 2px solid #fff;
+            color: #fff;
+            background-color: #0dcaf0;
+            transition: all 0.3s ease-in-out;
+            text-decoration: none;
+        }
+
+        .carousel-caption .btn:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .carousel-caption {
+                left: 5%;
+            }
+
+            .carousel-caption h1 {
+                font-size: 2rem;
+            }
+
+            .carousel-caption p.lead {
+                font-size: 1rem;
+            }
+
+            /* Pastikan ul.navbar-nav relatif agar pseudo-element bisa absolute */
+            .navbar-nav {
+                position: relative;
+            }
+
+            /* Garis custom sebagai pseudo-element */
+            .navbar-nav::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                /* di bawah item */
+                left: var(--underline-left, 0);
+                /* di‐set lewat JS */
+                width: var(--underline-width, 0);
+                /* di‐set lewat JS */
+                height: 3px;
+                /* ketebalan */
+                /* warna primary Bootstrap */
+                transition: left .3s ease, width .3s ease;
+                /* animasi sliding */
+            }
+
+            /* Beri ruang bawah link supaya teks tidak mepet ke garis */
+            .navbar-nav .nav-link {
+                padding-bottom: 0.5rem;
+            }
+
+            /* Hilangkan border/underline bawaan .active (Bootstrap tidak kasih,
+   tapi jika ada override lain, ini menjamin hilang) */
+            .navbar-nav .nav-link.active {
+                border-bottom: none !important;
+                text-decoration: none !important;
+            }
+
+            /* Section tujuan-pilmapres: buat semua card punya tinggi yang sama */
+            .tujuan-pilmapres .card {
+                height: 350px;
+                /* sesuaikan angka dengan kebutuhanmu */
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Kemudian card-body jadi flex agar konten ter-center */
+            .tujuan-pilmapres .card-body {
+                flex: 1;
+                /* ambil sisa tinggi */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                /* vertikal center */
+                align-items: center;
+                /* horizontal center */
+                text-align: center;
+                padding: 1.5rem;
+                /* spacing konsisten */
+            }
+
+            /* Optional: pakai object-fit untuk gambar agar tidak melar */
+            .tujuan-pilmapres .card-body img {
+                width: 48px;
+                height: 48px;
+                object-fit: contain;
+            }
+
+            .footer-text a {
+                color: white;
+                /* Warna awal putih */
+                text-decoration: none;
+                /* Hilangkan garis bawah */
+                transition: color 0.3s;
+                /* Efek transisi halus */
+            }
+
+            .footer-text a:hover,
+            .footer-text a:active {
+                color: #007bff;
+                /* Biru saat hover/klik */
+            }
     </style>
 </head>
 
