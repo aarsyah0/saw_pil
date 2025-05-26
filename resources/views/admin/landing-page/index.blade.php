@@ -292,7 +292,7 @@
                                     class="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
                                     Edit
                                 </button>
-                                <form action="{{ route('admin.schedules.destroy', $s->id) }}" method="POST"
+                                <form action="{{ route('landing-page.schedules.destroy', $s->id) }}" method="POST"
                                     class="inline">
                                     @csrf @method('DELETE')
                                     <button type="submit"
@@ -313,7 +313,7 @@
                                 <i class="bi bi-x-lg text-2xl"></i>
                             </button>
                             <h3 class="text-2xl font-bold mb-4">Edit Schedule</h3>
-                            <form action="{{ route('admin.schedules.update', $s->id) }}" method="POST"
+                            <form action="{{ route('landing-page.schedules.update', $s->id) }}" method="POST"
                                 class="space-y-4">
                                 @csrf @method('PUT')
                                 <input type="text" name="activity" value="{{ $s->activity }}"
@@ -346,7 +346,7 @@
                         <i class="bi bi-x-lg text-2xl"></i>
                     </button>
                     <h3 class="text-2xl font-bold mb-4">Add Schedule</h3>
-                    <form action="{{ route('admin.schedules.store') }}" method="POST" class="space-y-4">
+                    <form action="{{ route('landing-page.schedules.store') }}" method="POST" class="space-y-4">
                         @csrf
                         <input type="text" name="activity" class="border rounded-lg p-3 w-full"
                             placeholder="Activity" required>

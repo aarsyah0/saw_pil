@@ -191,6 +191,7 @@ class LandingPageController extends Controller
 
     public function destroySchedule(Schedule $schedule)
     {
+
         $schedule->delete();
         return back()->with('success', 'Schedule berhasil dihapus.');
     }

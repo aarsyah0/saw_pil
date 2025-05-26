@@ -63,7 +63,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/juri/presentasi', [PresentasiController::class, 'index'])->name('juri.presentasi');
 });
-Route::middleware(['auth','admin'])
+Route::middleware(['auth'])
      ->prefix('admin')
      ->name('admin.')
      ->group(function(){
@@ -328,3 +328,26 @@ Route::prefix('juri')
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function(){
     Route::resource('manajemen-akun', \App\Http\Controllers\Admin\ManajemenAkunController::class);
 });
+
+// routes/web.php
+
+Route::middleware('auth')
+     ->prefix('admin/landing-page')
+     ->name('landing-page.')
+     ->group(function(){
+
+    // Schedule Methods untuk Landing Page
+    Route::post('/schedules',
+        [\App\Http\Controllers\Admin\LandingPageController::class, 'storeSchedule']
+    )->name('schedules.store');
+
+    Route::put('/schedules/{schedule}',
+        [\App\Http\Controllers\Admin\LandingPageController::class, 'updateSchedule']
+    )->name('schedules.update');
+
+    Route::delete('/schedules/{schedule}',
+        [\App\Http\Controllers\Admin\LandingPageController::class, 'destroySchedule']
+    )->name('schedules.destroy');
+
+});
+

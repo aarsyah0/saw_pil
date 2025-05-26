@@ -8,12 +8,20 @@
                 Jl. Mastrip, Krajan Timur, Sumbersari, Kec. Sumbersari, Kabupaten Jember, Jawa Timur 68121
             </p>
         </div>
-
         <div class="footer-section">
             <h3 class="footer-title">Hubungi :</h3>
-            <p class="footer-text"><strong>Email:</strong> politeknik@polije.ac.id</p>
-            <p class="footer-text"><strong>WhatsApp:</strong> +62 331 333533</p>
+            <p class="footer-text">
+                <strong>Email:</strong>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=politeknik@polije.ac.id"
+                    target="_blank">politeknik@polije.ac.id</a>
+
+            </p>
+            <p class="footer-text">
+                <strong>WhatsApp:</strong>
+                <a href="https://wa.me/62331333533" target="_blank">+62 331 333533</a>
+            </p>
         </div>
+
     </div>
 
     <div class="footer-bottom">

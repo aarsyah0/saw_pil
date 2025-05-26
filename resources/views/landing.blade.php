@@ -45,6 +45,85 @@
             margin-bottom: .75rem;
             font-weight: 500;
         }
+
+        /* Pastikan ul.navbar-nav relatif agar pseudo-element bisa absolute */
+        .navbar-nav {
+            position: relative;
+        }
+
+        /* Garis custom sebagai pseudo-element */
+        .navbar-nav::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            /* di bawah item */
+            left: var(--underline-left, 0);
+            /* di‐set lewat JS */
+            width: var(--underline-width, 0);
+            /* di‐set lewat JS */
+            height: 3px;
+            /* ketebalan */
+            /* warna primary Bootstrap */
+            transition: left .3s ease, width .3s ease;
+            /* animasi sliding */
+        }
+
+        /* Beri ruang bawah link supaya teks tidak mepet ke garis */
+        .navbar-nav .nav-link {
+            padding-bottom: 0.5rem;
+        }
+
+        /* Hilangkan border/underline bawaan .active (Bootstrap tidak kasih,
+   tapi jika ada override lain, ini menjamin hilang) */
+        .navbar-nav .nav-link.active {
+            border-bottom: none !important;
+            text-decoration: none !important;
+        }
+
+        /* Section tujuan-pilmapres: buat semua card punya tinggi yang sama */
+        .tujuan-pilmapres .card {
+            height: 350px;
+            /* sesuaikan angka dengan kebutuhanmu */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Kemudian card-body jadi flex agar konten ter-center */
+        .tujuan-pilmapres .card-body {
+            flex: 1;
+            /* ambil sisa tinggi */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* vertikal center */
+            align-items: center;
+            /* horizontal center */
+            text-align: center;
+            padding: 1.5rem;
+            /* spacing konsisten */
+        }
+
+        /* Optional: pakai object-fit untuk gambar agar tidak melar */
+        .tujuan-pilmapres .card-body img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+
+        .footer-text a {
+            color: white;
+            /* Warna awal putih */
+            text-decoration: none;
+            /* Hilangkan garis bawah */
+            transition: color 0.3s;
+            /* Efek transisi halus */
+        }
+
+        .footer-text a:hover,
+        .footer-text a:active {
+            color: #007bff;
+            /* Biru saat hover/klik */
+        }
     </style>
 </head>
 
@@ -101,23 +180,26 @@
 
     {{-- Tujuan Pilmapres Section --}}
     <section class="container my-5 tujuan-pilmapres" id="tujuan">
-        <h2 class="mb-4 text-center" data-aos="fade-down" data-aos-duration="600">Tujuan Pilmapres</h2>
-        <div class="row g-4">
+        <h2 class="mb-4 text-center" data-aos="fade-down" data-aos-duration="600">
+            Tujuan Pilmapres
+        </h2>
+        <div class="row g-4 align-items-stretch">
             @foreach ($purposes as $p)
-                <div class="col-sm-6 col-md-4" data-aos="fade-up" data-aos-offset="200" data-aos-easing="ease-in-out"
-                    data-aos-duration="600">
+                <div class="col-sm-6 col-md-4">
                     <div class="card h-100 text-center border-0 shadow-sm">
-                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                        <div class="card-body d-flex flex-column justify-content-center">
                             <img src="{{ asset('images/check-icon.png') }}" alt="Checklist Icon" class="mb-3"
-                                style="width: 48px; height: 48px;" data-aos="flip-left" data-aos-duration="800">
+                                style="width:48px; height:48px; object-fit:contain;" data-aos="flip-left"
+                                data-aos-duration="800">
                             <h5 class="card-title fw-bold">{{ $p->title }}</h5>
-                            <p class="card-text text-muted">{{ $p->description ?? '-' }}</p>
+                            <p class="card-text text-muted mt-2">{{ $p->description ?? '-' }}</p>
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
     </section>
+
 
     {{-- Persyaratan Peserta Section --}}
     <section class="container my-5" id="persyaratan">
@@ -184,8 +266,31 @@
             });
         });
     </script>
-    <!-- Custom JS -->
-    <script src="{{ asset('js/landing.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navUl = document.querySelector('.navbar-nav');
+            const links = navUl.querySelectorAll('.nav-link');
+
+            function updateUnderline(el) {
+                navUl.style.setProperty('--underline-left', el.offsetLeft + 'px');
+                navUl.style.setProperty('--underline-width', el.offsetWidth + 'px');
+            }
+
+            // set awal ke .active atau ke link pertama
+            const initial = navUl.querySelector('.nav-link.active') || links[0];
+            updateUnderline(initial);
+
+            links.forEach(link => {
+                link.addEventListener('click', () => {
+                    links.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    updateUnderline(link);
+                });
+            });
+        });
+    </script>
+
+
 </body>
 
 </html>
