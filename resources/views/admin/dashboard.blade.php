@@ -61,6 +61,7 @@
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">File</th>
                         <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
@@ -69,7 +70,8 @@
                             <td class="px-4 py-3 text-sm text-gray-600">{{ $i + 1 }}</td>
                             <td class="px-4 py-3 text-sm text-gray-800">{{ $sub->peserta->user->name }}</td>
                             <td class="px-4 py-3 text-sm text-gray-800 truncate" style="max-width: 180px;">
-                                {{ $sub->file_path }}</td>
+                                {{ $sub->file_path }}
+                            </td>
                             <td class="px-4 py-3 text-sm text-center">
                                 @php
                                     $colors = [
@@ -83,10 +85,22 @@
                                     {{ ucfirst($sub->status) }}
                                 </span>
                             </td>
+                            <td class="px-4 py-3 text-center">
+                                <form action="{{ route('admin.dashboard.destroySubmission', $sub->id) }}" method="POST"
+                                    onsubmit="return confirm('Yakin ingin menghapus berkas ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs">
+                                        Hapus
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
     </div>
+
 @endsection

@@ -3,7 +3,7 @@
 @section('title', 'Perangkingan Akhir')
 
 @section('content')
-    <div class="mb-6">
+    <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold text-gray-800">Perangkingan Akhir (SAW)</h2>
     </div>
 
@@ -17,6 +17,7 @@
                     <th class="px-6 py-3 text-center text-sm font-medium text-gray-600">PI<sub>norm</sub></th>
                     <th class="px-6 py-3 text-center text-sm font-medium text-gray-600">BI<sub>norm</sub></th>
                     <th class="px-6 py-3 text-center text-sm font-medium text-gray-600">Total SAW</th>
+                    <th class="px-6 py-3 text-center text-sm font-medium text-gray-600">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,10 +31,22 @@
                         <td class="px-6 py-4 text-center">{{ number_format($row->norm['PI'], 4) }}</td>
                         <td class="px-6 py-4 text-center">{{ number_format($row->norm['BI'], 4) }}</td>
                         <td class="px-6 py-4 text-center font-bold">{{ number_format($row->computed_total, 4) }}</td>
+                        <td class="px-6 py-4 text-center">
+                            <form action="{{ route('admin.penilaian-akhir.destroy', $row->peserta->user_id) }}"
+                                method="POST" onsubmit="return confirm('Yakin ingin menghapus penilaian ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+                                    Hapus
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">Belum ada data penilaian.</td>
+                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                            Belum ada data penilaian.
+                        </td>
                     </tr>
                 @endforelse
             </tbody>

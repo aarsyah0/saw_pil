@@ -109,4 +109,13 @@ class PenilaianAkhirController extends Controller
             'bobot'  => $bobot,
         ]);
     }
+    public function destroy($id)
+    {
+        $pa = PenilaianAkhir::findOrFail($id);
+        $pa->delete();
+
+        return redirect()
+            ->route('admin.penilaian-akhir.index')
+            ->with('success', 'Penilaian Akhir berhasil dihapus.');
+    }
 }

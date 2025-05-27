@@ -70,6 +70,9 @@ Route::middleware(['auth'])
 
     // Dashboard
     Route::get('/dashboard', [AdminDashboard::class,'index'])->name('dashboard');
+    Route::delete('/dashboard/submission/{id}', [AdminDashboard::class, 'destroySubmission'])
+    ->name('dashboard.destroySubmission');
+
 
     // Landing page overview
     Route::get('/landing-page', [LandingPageController::class, 'index'])->name('landing-page.index');
@@ -234,6 +237,8 @@ Route::middleware('auth')
          // ...
          Route::get('penilaian-akhir', [PenilaianAkhirController::class, 'index'])
               ->name('penilaian-akhir.index');
+        Route::delete('/penilaian-akhir/{id}', [PenilaianAkhirController::class, 'destroy'])
+            ->name('penilaian-akhir.destroy');
      });
 
 
