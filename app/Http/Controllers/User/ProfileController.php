@@ -81,7 +81,7 @@ class ProfileController extends Controller
             'no_hp'              => 'required|string|max:20',
             'tempat_lahir'       => 'required|string|max:50',
             'tanggal_lahir'      => 'required|date',
-            'program_pendidikan' => 'required|in:Diploma,Sarjana',
+            'program_pendidikan' => 'required|in:Diploma,Sarjana,Diploma3,Diploma4',
             'jurusan'            => 'required|string|max:100',
             'program_studi'      => 'required|string|max:100',
             'semester_ke'        => 'required|integer|min:1',
