@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\CuSubmission;
 use App\Models\PenilaianAkhir;
 use App\Models\PesertaProfile;
+use App\Models\PenilaianPiJuri; // ✅ ini model
+use App\Models\PenilaianBiJuri;
 use App\Models\BobotKriteria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -109,13 +111,32 @@ class PenilaianAkhirController extends Controller
             'bobot'  => $bobot,
         ]);
     }
-    public function destroy($id)
-    {
-        $pa = PenilaianAkhir::findOrFail($id);
-        $pa->delete();
+     public function destroy($id)
+{
+    // 1. Temukan entri PenilaianAkhir berdasarkan ID
+    $pa = PenilaianAkhir::findOrFail($id);
+    $pesertaId = $pa->peserta_id;
 
-        return redirect()
-            ->route('admin.penilaian-akhir.index')
-            ->with('success', 'Penilaian Akhir berhasil dihapus.');
-    }
+    // 2. Hapus semua PenilaianPiJuri di mana schedule.peserta_id = $pesertaId
+    PenilaianPiJuri::whereHas('schedule', function($query) use ($pesertaId) {
+        $query->where('peserta_id', $pesertaId);
+    })->delete();
+
+    // 3. Hapus semua PenilaianBiJuri di mana schedule.peserta_id = $pesertaId
+    PenilaianBiJuri::whereHas('schedule', function($query) use ($pesertaId) {
+        $query->where('peserta_id', $pesertaId);
+    })->delete();
+
+    // 4. Hapus semua CU Submission yang sudah disetujui untuk peserta ini
+    CuSubmission::where('peserta_id', $pesertaId)
+        ->where('status', CuSubmission::STATUS_APPROVED)
+        ->delete();
+
+    // 5. Hapus entri PenilaianAkhir itu sendiri
+    $pa->delete();
+
+    return redirect()
+        ->route('admin.penilaian-akhir.index')
+        ->with('success', 'Penilaian Akhir, CU Submission, dan seluruh Penilaian PI & BI Juri berhasil dihapus.');
+}
 }
