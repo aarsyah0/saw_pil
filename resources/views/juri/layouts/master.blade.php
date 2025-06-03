@@ -16,8 +16,10 @@
     {{-- Sidebar --}}
     @include('juri.layouts.partials.sidebar')
 
+
     {{-- Main Content --}}
     <main class="flex-1 p-10 overflow-y-auto ml-[20%]">
+        @include('juri.layouts.partials.header')
         @yield('content')
     </main>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>

@@ -2,7 +2,7 @@
     <div class="flex justify-between items-center">
         <h1 class="text-2xl font-bold">@yield('page-title', 'Dashboard')</h1>
         <span class="text-gray-700">
-            Good morning, <strong>{{ Auth::user()->name }}</strong>
+            Halo Selamat Datang, <strong>{{ Auth::user()->name }}</strong>
         </span>
     </div>
 </header>
