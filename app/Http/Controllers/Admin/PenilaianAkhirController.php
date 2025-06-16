@@ -67,7 +67,6 @@ class PenilaianAkhirController extends Controller
                 'BI' => round($normBi * ($bobot['BI'] ?? 0), 4),
             ];
             $computed = array_sum($weighted);
-
             return (object) [
                 'peserta'        => $profile,
                 'norm'           => $norm,
@@ -139,5 +138,57 @@ class PenilaianAkhirController extends Controller
         ->route('admin.penilaian-akhir.index')
         ->with('success', 'Penilaian Akhir, CU Submission, dan seluruh Penilaian PI & BI Juri berhasil dihapus.');
 }
+protected function simpanRekapitulasiTahunan($year = null)
+{
+    $currentYear = $year ?? date('Y');
+    $penilaianList = \App\Models\PenilaianAkhir::all();
+
+    foreach ($penilaianList as $pa) {
+        $pid = $pa->peserta_id;
+
+        // Ambil semua entri CU untuk peserta ini
+        $cuList = \App\Models\CuSelection::where('peserta_id', $pid)->get();
+
+        // Default status dan round
+        $statusCu = 'pending';
+        $round = 0;
+
+        if ($cuList->isNotEmpty()) {
+            // Ambil selection_round tertinggi
+            $round = $cuList->max('selection_round');
+
+            // Cari status_lolos sesuai urutan prioritas
+            if ($cuList->contains('status_lolos', 'lolos')) {
+                $statusCu = 'lolos';
+            } elseif ($cuList->contains('status_lolos', 'gagal')) {
+                $statusCu = 'gagal';
+            } elseif ($cuList->contains('status_lolos', 'pending')) {
+                $statusCu = 'pending';
+            }
+        }
+
+        // Simpan rekap
+        \App\Models\RekapPenilaianTahunan::updateOrCreate(
+            ['peserta_id' => $pid, 'tahun' => $currentYear],
+            [
+                'skor_cu_normal'  => $pa->skor_cu_normal,
+                'skor_pi_normal'  => $pa->skor_pi_normal,
+                'skor_bi_normal'  => $pa->skor_bi_normal,
+                'total_akhir'     => $pa->total_akhir,
+                'status_cu'       => $statusCu,
+                'selection_round' => $round,
+            ]
+        );
+    }
+}
+
+public function rekapTahunan(Request $request)
+{
+    $this->simpanRekapitulasiTahunan();
+
+    return redirect()->route('admin.penilaian-akhir.index')
+        ->with('success', 'Rekapitulasi tahunan berhasil disimpan.');
+}
+
 
 }

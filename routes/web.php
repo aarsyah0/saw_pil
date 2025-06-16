@@ -26,10 +26,32 @@ use App\Http\Controllers\Admin\SchedulePiBiController;
 use App\Http\Controllers\Admin\BobotKriteriaController;
 use App\Http\Controllers\Admin\PenilaianAkhirController;
 use App\Http\Controllers\Juri\PenilaianJuriController;
+use App\Http\Controllers\Admin\RekapTahunanController;
+use App\Exports\RekapTahunanExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\RekapPenilaianTahunan;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 
+
+Route::get('/admin/rekap/export/{tahun}', function ($tahun) {
+    return Excel::download(new RekapTahunanExport($tahun), 'rekap_'.$tahun.'.xlsx');
+})->name('admin.rekap.export');
+
+Route::get('/admin/rekap/pdf/{tahun}', function ($tahun) {
+    $rekap = RekapPenilaianTahunan::with('peserta.user')
+        ->where('tahun', $tahun)
+        ->orderByDesc('total_akhir')
+        ->get();
+
+    $pdf = Pdf::loadView('exports.rekap_pdf', compact('rekap', 'tahun'))
+        ->setPaper('A4', 'landscape');
+
+    return $pdf->download('rekap_' . $tahun . '.pdf');
+})->name('admin.rekap.pdf');
 
 // Halaman Login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -98,6 +120,11 @@ Route::delete('/schedules/{schedule}', [LandingPageController::class, 'destroySc
     Route::get('manajemen-akun', [ManajemenAkunController::class, 'index'])
     ->name('manajemen-akun');
 
+Route::post('/penilaian-akhir/simpan-rekap', [PenilaianAkhirController::class, 'rekapTahunan'])
+        ->name('penilaian-akhir.rekap');
+
+Route::get('/rekapitulasi-tahunan', [RekapTahunanController::class, 'index'])->name('rekap.index');
+    Route::get('/rekapitulasi-tahunan/{tahun}', [RekapTahunanController::class, 'show'])->name('rekap.show');
 });
 
 

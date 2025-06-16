@@ -83,4 +83,15 @@
             </table>
         </div>
     </div>
+
+    <div class="flex justify-end mb-4">
+        <form action="{{ route('admin.penilaian-akhir.rekap') }}" method="POST"
+            onsubmit="return confirm('Simpan rekapitulasi tahun ini?')">
+            @csrf
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                Simpan Rekapitulasi
+            </button>
+        </form>
+    </div>
+
 @endsection

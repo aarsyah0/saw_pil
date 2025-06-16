@@ -142,7 +142,16 @@
                 <a href="{{ route('admin.penilaian-akhir.index') }}"
                     class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition
                     {{ Request::routeIs('admin.landing-page.index') ? 'bg-white font-bold shadow' : '' }}">
-                    <i class="bi bi-clipboard-check text-lg mr-3"></i> Penilaian Akhir
+                    <i class="fa fa-clipboard-check text-lg mr-3"></i> Penilaian Akhir
+
+                </a>
+            </li>
+
+            <li class="mb-2">
+                <a href="{{ route('admin.rekap.index') }}"
+                    class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-200 transition
+                    {{ Request::routeIs('admin.rekap.index') ? 'bg-white font-bold shadow' : '' }}">
+                    <i class="fa fa-chart-bar text-lg mr-3"></i> Rekapitulasi
 
                 </a>
             </li>
